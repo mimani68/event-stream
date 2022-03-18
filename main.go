@@ -108,7 +108,7 @@ func cronProxy(cronTimeString string, cb func()) (bool, error) {
 	return true, nil
 }
 
-func EventHandlerApplication() {
+func EventHandlerApplication(stateChannel chan string) {
 	cronProxy(CRON_EVERY_SECONDS, func() {
 		fmt.Println("check undetermined authrities")
 		checkUndeterminedAuthorities()
@@ -123,11 +123,15 @@ func EventHandlerApplication() {
 		fmt.Println("check tatum confirmed authorities")
 		fmt.Println("clean system and expire datas")
 	})
+	time.Sleep(10 * time.Second)
+	stateChannel <- "done"
 	time.Sleep(10 * 365 * 24 * 3600 * time.Second)
 }
 
 func main() {
 	setNewNetwork("ethereum")
-	setNewNetwork("bitcoin")
-	EventHandlerApplication()
+	go setNewNetwork("bitcoin")
+	ch := make(chan string)
+	EventHandlerApplication(ch)
+	fmt.Println(<-ch)
 }
