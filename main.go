@@ -129,8 +129,9 @@ func EventHandlerApplication(stateChannel chan string) {
 }
 
 func main() {
+	defer fmt.Println("bye")
 	setNewNetwork("ethereum")
-	go setNewNetwork("bitcoin")
+	setNewNetwork("bitcoin")
 	ch := make(chan string)
 	EventHandlerApplication(ch)
 	fmt.Println(<-ch)
