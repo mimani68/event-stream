@@ -8,6 +8,14 @@ import (
 	"zarinworld.ir/event/pkg/db"
 )
 
+const (
+	CRON_EVERY_SECONDS    = "* * * * * *"
+	CRON_EVERY_5_SECONDS  = "*/5 * * * * *"
+	CRON_EVERY_15_SECONDS = "*/15 * * * * *"
+	CRON_EVERY_30_SECONDS = "*/30 * * * * *"
+	CRON_EVERY_60_SECONDS = "* * * * *"
+)
+
 func checkStatusOfTransaction(address string) {
 	// call blockchair
 	//    if blockNumber === -1 => send confirm: false
@@ -24,24 +32,15 @@ func checkUndeterminedAuthorities() {
 	title := "sampl auth id"
 	m := make(map[string]string)
 	m[title] = "auth goes here"
-	if len(db.UndeterminedAuthorities) == 0 {
-		db.UndeterminedAuthorities = append(db.UndeterminedAuthorities, m)
-	}
-	for _, v := range db.UndeterminedAuthorities {
-		if v[title] == "" {
-			db.UndeterminedAuthorities = append(db.UndeterminedAuthorities, m)
-		} else if v[title] != "" && v[title] != m[title] {
-			v[title] = m[title]
-		}
-	}
+	db.Store(db.AUTHORITY, m)
 }
 
 func cleanAuthoriries() {
 	fmt.Println("clean started")
 }
 
-func getUndeterminedAuthorities() []map[string]string {
-	return db.UndeterminedAuthorities
+func getUndeterminedAuthorities() []interface{} {
+	return db.GetAll(db.AUTHORITY)
 }
 
 func currentBlock(network string) {
@@ -54,8 +53,8 @@ func currentBlock(network string) {
 
 func getCurrentBlock(network string) int {
 	number := 0
-	for _, value := range db.CurrentBlockNumberList {
-		number = value[network]
+	for index, _ := range db.CurrentBlockNumberList {
+		number = db.CurrentBlockNumberList[index].(int)
 	}
 	return number
 }
@@ -68,39 +67,48 @@ func gettNetworkList() []string {
 	return db.NetworkList
 }
 
-func eventHandlerApplication() {
-	c := cron.New(cron.WithSeconds())
-	c.AddFunc("*/30 * * * * *", func() {
-		fmt.Println("Delayed tasks, like check blockNumber and ...")
-		a := gettNetworkList()
-		for index := range a {
-			currentBlock(a[index])
-		}
+func EventHandlerApplication() {
+	cronProxy(CRON_EVERY_SECONDS, func() {
+		fmt.Println("check undetermined authrities")
 		checkUndeterminedAuthorities()
 	})
-	c.AddFunc("* * * * * *", func() {
-		fmt.Println("Instance task")
+	cronProxy(CRON_EVERY_5_SECONDS, func() {
+		fmt.Println("check current block number")
+		fmt.Println("send notification of confirmed > 0 authorities")
 	})
+	cronProxy(CRON_EVERY_15_SECONDS, func() {
+		fmt.Println("check check new authorities from blockchair")
+		fmt.Println("check tatum confirmed authorities")
+		fmt.Println("clean system and expire datas")
+	})
+	time.Sleep(10 * 365 * 24 * 3600 * time.Second)
+}
+
+func cronProxy(cronTimeString string, cb func()) (bool, error) {
+	c := cron.New(cron.WithSeconds())
+	cronId, err := c.AddFunc(cronTimeString, cb)
+	if err != nil {
+		return false, err
+	}
+	fmt.Println(cronId)
 	c.Start()
+	return true, nil
 }
 
 func main() {
 
 	setNewNetwork("ethereum")
 	setNewNetwork("bitcoin")
-	setNewNetwork("litecoin")
-	setNewNetwork("tron")
 
-	// eventHandlerApplication()
-	// time.Sleep(10 * 365 * 24 * 3600 * time.Second)
+	EventHandlerApplication()
 
-	checkUndeterminedAuthorities()
-	checkUndeterminedAuthorities()
-	checkUndeterminedAuthorities()
-	checkUndeterminedAuthorities()
-	checkUndeterminedAuthorities()
-	a := getUndeterminedAuthorities()
-	for _, value := range a {
-		fmt.Println(value)
-	}
+	// checkUndeterminedAuthorities()
+	// checkUndeterminedAuthorities()
+	// checkUndeterminedAuthorities()
+	// checkUndeterminedAuthorities()
+	// checkUndeterminedAuthorities()
+	// a := getUndeterminedAuthorities()
+	// for _, value := range a {
+	// 	fmt.Println(value)
+	// }
 }
