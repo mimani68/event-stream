@@ -29,10 +29,11 @@ func checkUndeterminedAuthorities() {
 	// call baas/authorities/
 	// filter { incoming_value:0 , status: "ACTIVE", expire >= now }
 	// authList []
-	title := "sampl auth id"
 	m := make(map[string]string)
-	m[title] = "auth goes here"
-	db.Store(db.AUTHORITY, m)
+	m["id"] = "0e61a584-a6a4-11ec-849e-d32cf9f774d5"
+	m["value"] = "0"
+	m["expireIn"] = "2022-10-01T00:00:00"
+	db.Store(db.AUTHORITIES, m)
 }
 
 func cleanAuthoriries() {
@@ -40,7 +41,7 @@ func cleanAuthoriries() {
 }
 
 func getUndeterminedAuthorities() []interface{} {
-	return db.GetAll(db.AUTHORITY)
+	return db.GetAll(db.AUTHORITIES)
 }
 
 func currentBlock(network string) {
@@ -97,18 +98,18 @@ func cronProxy(cronTimeString string, cb func()) (bool, error) {
 
 func main() {
 
-	setNewNetwork("ethereum")
-	setNewNetwork("bitcoin")
+	// setNewNetwork("ethereum")
+	// setNewNetwork("bitcoin")
 
-	EventHandlerApplication()
+	// EventHandlerApplication()
 
-	// checkUndeterminedAuthorities()
-	// checkUndeterminedAuthorities()
-	// checkUndeterminedAuthorities()
-	// checkUndeterminedAuthorities()
-	// checkUndeterminedAuthorities()
-	// a := getUndeterminedAuthorities()
-	// for _, value := range a {
-	// 	fmt.Println(value)
-	// }
+	checkUndeterminedAuthorities()
+	checkUndeterminedAuthorities()
+	checkUndeterminedAuthorities()
+	checkUndeterminedAuthorities()
+	checkUndeterminedAuthorities()
+	a := getUndeterminedAuthorities()
+	for _, value := range a {
+		fmt.Println(value)
+	}
 }

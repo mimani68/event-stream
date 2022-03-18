@@ -1,57 +1,44 @@
 package db
 
-// var UndeterminedAuthorities []map[string]string
-// var CurrentBlockNumberList []map[string]int
-// var NetworkList []string
-
 var UndeterminedAuthorities []interface{}
 var CurrentBlockNumberList []interface{}
 var NetworkList []string
 
 const (
-	AUTHORITY   = "AUTHORITY"
-	NETWORK     = "NETWORK"
-	BLOCKNUMBER = "BLOCKNUMBER"
+	AUTHORITIES      = "authority"
+	NETWORK          = "network"
+	BLOCKNUMBER      = "currentBlocNumber"
+	ADDRESS          = "address"
+	TRANSACTIONS     = "trx"
+	NEW_TRANSACTIONS = "new trx"
 )
 
 func Store(dbName string, param interface{}) bool {
-	// func Store(dbName string, map[string]string) bool {
-	// switch dbName {
-	// case AUTHORITY:
-	// 	if len(UndeterminedAuthorities) == 0 {
-	// 		UndeterminedAuthorities = append(UndeterminedAuthorities, param)
-	// 	}
-	// 	for _, v := range UndeterminedAuthorities {
-	// 		if v[title] == "" {
-	// 			UndeterminedAuthorities = append(UndeterminedAuthorities, param)
-	// 		} else if v[title] != "" && v[title] != param[title] {
-	// 			v[title] = param[title]
-	// 		}
-	// 	}
-	// }
+	statOfStoring := false
+	paramAfterCasting := param.(map[string]string)
 	switch dbName {
-	case AUTHORITY:
+	case AUTHORITIES:
 		if len(UndeterminedAuthorities) == 0 {
 			UndeterminedAuthorities = append(UndeterminedAuthorities, param)
+			statOfStoring = true
 		}
-		// for index, _ := range UndeterminedAuthorities {
-		// 	if UndeterminedAuthorities[index] == "" {
-		// 		UndeterminedAuthorities = append(UndeterminedAuthorities, param)
-		// 	} else if UndeterminedAuthorities[index] != "" && UndeterminedAuthorities[index] != param[title] {
-		// 		UndeterminedAuthorities[index] = param[title]
-		// 	}
-		// }
+		for index, value := range UndeterminedAuthorities {
+			valueAfterCasting := value.(map[string]string)
+			if valueAfterCasting["id"] == paramAfterCasting["id"] {
+				UndeterminedAuthorities[index] = param
+			} else {
+				UndeterminedAuthorities = append(UndeterminedAuthorities, param)
+			}
+		}
 	}
-	return true
+	return statOfStoring
 }
 
 func GetAll(dbName string) []interface{} {
 	result := []interface{}{}
 	switch dbName {
-	case AUTHORITY:
-		for index, _ := range UndeterminedAuthorities {
-			result = append(result, UndeterminedAuthorities[index])
-		}
+	case AUTHORITIES:
+		result = UndeterminedAuthorities
 	}
 	return result
 }
