@@ -28,8 +28,7 @@ func cleanSystem() {
 }
 
 func stopAppliction(stateChannel chan interface{}) {
-	time.Sleep(3 * time.Second)
-	// time.Sleep(1 * 24 * 3600 * time.Second)
-	defer fmt.Println("bye")
+	time.Sleep(1 * 24 * 3600 * time.Second)
+	defer fmt.Printf("The application stoped at [%s]\n", time.Now().Format(time.RFC3339))
 	stateChannel <- "done"
 }
