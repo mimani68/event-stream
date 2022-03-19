@@ -9,23 +9,30 @@ import (
 
 func EventHandlerModule(stateChannel chan interface{}) {
 	go stopAppliction(stateChannel)
-	cronProxy(CRON_EVERY_SECONDS, func() {
+	cronProxy(CRON_EVERY_2_SECONDS, func() {
 		log_handler.LoggerF("check undetermined authrities")
-		checkUndeterminedAuthorities()
-	})
-	cronProxy(CRON_EVERY_5_SECONDS, func() {
-		networkList := GetNetworkList()
-		for _, item := range networkList {
-			// updateCurrentBlock(item["network"])
-			fmt.Println(item)
+		for _, address := range GetAddressList() {
+			updateUndeterminedAuthorities(address["addres"].(string))
 		}
-		// updateConfirmTransactions()
-		cleanSystem()
 	})
-	cronProxy(CRON_EVERY_15_SECONDS, func() {
-		log_handler.LoggerF("check check new authorities from blockchair")
-		log_handler.LoggerF("check tatum confirmed authorities")
-		log_handler.LoggerF("clean system and expire datas")
+	cronProxy(CRON_EVERY_10_SECONDS, func() {
+		for _, network := range GetNetworkList() {
+			updateCurrentBlock(network["network"].(string))
+		}
+		// Check new transactions
+		for _, address := range GetAddressList() {
+			newTransactionsList := updateNewTransactionOfAddress(address["address"].(string))
+			for _, item := range newTransactionsList {
+				sendPostWebhook(item)
+			}
+		}
+		// dobule check status of confirm transactions
+		for _, item := range getConfirmdTransactions() {
+			updatedTrx := updateConfirmTransactions(item["txId"].(string))
+			updatedTrx["type"] = "confirmed transactions"
+			sendPostWebhook(updatedTrx)
+		}
+		cleanSystem()
 	})
 }
 

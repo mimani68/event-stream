@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	CRON_EVERY_SECONDS    = "* * * * * *"
+	CRON_EVERY_2_SECONDS  = "*/2 * * * * *"
 	CRON_EVERY_5_SECONDS  = "*/5 * * * * *"
+	CRON_EVERY_10_SECONDS = "*/10 * * * * *"
 	CRON_EVERY_15_SECONDS = "*/15 * * * * *"
 	CRON_EVERY_30_SECONDS = "*/30 * * * * *"
 	CRON_EVERY_60_SECONDS = "* * * * *"

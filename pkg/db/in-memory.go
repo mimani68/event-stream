@@ -34,12 +34,8 @@ func Store(dbName string, param map[string]interface{}) bool {
 }
 
 func GetAll(dbName string) []map[string]interface{} {
-	result := []map[string]interface{}{}
-	switch dbName {
-	case AUTHORITIES:
-		result = undeterminedAuthorities
-	}
-	return result
+	dbMemoryAddress := dbSelector(dbName)
+	return *dbMemoryAddress
 }
 
 func dbSelector(dbName string) *[]map[string]interface{} {
