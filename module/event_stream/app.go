@@ -9,12 +9,12 @@ import (
 
 func EventHandlerModule(stateChannel chan interface{}) {
 	go stopAppliction(stateChannel)
-	cronProxy(CRON_EVERY_2_SECONDS, func() {
-		log_handler.LoggerF("check undetermined authrities")
-		for _, address := range GetAddressList() {
-			updateUndeterminedAuthorities(address["addres"].(string))
-		}
-	})
+	// cronProxy(CRON_EVERY_2_SECONDS, func() {
+	// 	log_handler.LoggerF("check undetermined authrities")
+	// 	for _, address := range GetAddressList() {
+	// 		updateUndeterminedAuthorities(address["addres"].(string))
+	// 	}
+	// })
 	cronProxy(CRON_EVERY_10_SECONDS, func() {
 		for _, network := range GetNetworkList() {
 			updateCurrentBlock(network["network"].(string))
@@ -22,8 +22,9 @@ func EventHandlerModule(stateChannel chan interface{}) {
 		// Check new transactions
 		for _, address := range GetAddressList() {
 			newTransactionsList := updateNewTransactionOfAddress(address["address"].(string))
-			for _, item := range newTransactionsList {
-				sendPostWebhook(item)
+			for _, updatedTrx := range newTransactionsList {
+				updatedTrx["type"] = "confirmed transactions"
+				sendPostWebhook(updatedTrx)
 			}
 		}
 		// dobule check status of confirm transactions
@@ -41,7 +42,7 @@ func cleanSystem() {
 }
 
 func stopAppliction(stateChannel chan interface{}) {
-	time.Sleep(1 * 24 * 3600 * time.Second)
+	time.Sleep(7 * 24 * 3600 * time.Second)
 	defer fmt.Printf("The application stoped at [%s]\n", time.Now().Format(time.RFC3339))
 	stateChannel <- "done"
 }
