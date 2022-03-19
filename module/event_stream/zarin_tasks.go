@@ -2,14 +2,12 @@ package event_stream
 
 import (
 	"fmt"
-	"math"
 	"time"
 
 	"zarinworld.ir/event/pkg/blockchair"
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/log_handler"
 	"zarinworld.ir/event/pkg/tatum"
-	"zarinworld.ir/event/pkg/zwbaas"
 )
 
 func updateConfirmTransactions(trxID string) map[string]interface{} {
@@ -35,7 +33,7 @@ func updateConfirmTransactions(trxID string) map[string]interface{} {
 }
 
 func updateNewTransactionOfAddress(address string) []map[string]interface{} {
-	log_handler.LoggerF("Checking new trx of address", address)
+	log_handler.LoggerF("Checking new trx of address %s", address)
 	tmp := []map[string]interface{}{}
 	for _, transaction := range blockchair.GetAddressHistory(address) {
 		// if transaction["confirm"] == -1
@@ -45,12 +43,12 @@ func updateNewTransactionOfAddress(address string) []map[string]interface{} {
 	return tmp
 }
 
-func updateUndeterminedAuthorities(address string) {
-	log_handler.LoggerF("Checking all Undetermined authorities form Zarin BAAS")
-	for _, authority := range zwbaas.GetAuthorities(address) {
-		db.Store(db.AUTHORITIES, authority)
-	}
-}
+// func updateUndeterminedAuthorities(address string) {
+// 	log_handler.LoggerF("Checking all Undetermined authorities form Zarin BAAS")
+// 	for _, authority := range zwbaas.GetAuthorities(address) {
+// 		db.Store(db.AUTHORITIES, authority)
+// 	}
+// }
 
 func GetUndeterminedAuthorities() []map[string]interface{} {
 	return db.GetAll(db.AUTHORITIES)
@@ -65,14 +63,15 @@ func getConfirmdTransactions() []map[string]interface{} {
 }
 
 func updateCurrentBlock(network string) {
-	log_handler.LoggerF("Current block number of %s updated", network)
 	// call network tatum/blockchair
 	// FIXME: change from mock to real number
 	fakeNumber := time.Now().Unix() / 100
 	blockNumber := map[string]interface{}{
-		network: math.Round(float64(fakeNumber) + 1),
+		network: fakeNumber + 1,
 	}
 	db.Store(db.BLOCKNUMBER, blockNumber)
+	msg := fmt.Sprintf("Current block number of %s is %d and db update", network, blockNumber[network])
+	log_handler.LoggerF(msg)
 }
 
 func getCurrentBlock(network string) int {

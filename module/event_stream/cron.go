@@ -1,8 +1,6 @@
 package event_stream
 
 import (
-	"fmt"
-
 	"github.com/robfig/cron/v3"
 )
 
@@ -17,11 +15,11 @@ const (
 
 func cronProxy(cronTimeString string, cb func()) (bool, error) {
 	c := cron.New(cron.WithSeconds())
-	cronId, err := c.AddFunc(cronTimeString, cb)
+	_, err := c.AddFunc(cronTimeString, cb)
 	if err != nil {
 		return false, err
 	}
-	fmt.Println(cronId)
+	// log_handler.LoggerF("Cron id is %s%s%s", string(log_handler.ColorRed), fmt.Sprint(cronId), string(log_handler.ColorReset))
 	c.Start()
 	return true, nil
 }
