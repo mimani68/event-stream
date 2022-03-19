@@ -1,11 +1,11 @@
 package db
 
-var undeterminedAuthorities []interface{}
-var currentBlockNumberList []interface{}
-var networkList []interface{}
-var addresList []interface{}
-var newTransactions []interface{}
-var transactions []interface{}
+var undeterminedAuthorities []map[string]interface{}
+var currentBlockNumberList []map[string]interface{}
+var networkList []map[string]interface{}
+var addresList []map[string]interface{}
+var newTransactions []map[string]interface{}
+var transactions []map[string]interface{}
 
 const (
 	AUTHORITIES      = "authority"
@@ -16,17 +16,15 @@ const (
 	NEW_TRANSACTIONS = "new trx"
 )
 
-func Store(dbName string, param interface{}) bool {
+func Store(dbName string, param map[string]interface{}) bool {
 	statOfStoring := false
-	paramAfterCasting := param.(map[string]string)
 	db := dbSelector(dbName)
 	if len(*db) == 0 {
 		*db = append(*db, param)
 		statOfStoring = true
 	}
 	for index, value := range *db {
-		valueAfterCasting := value.(map[string]string)
-		if valueAfterCasting["id"] == paramAfterCasting["id"] {
+		if value["id"] == param["id"] {
 			(*db)[index] = param
 		} else {
 			*db = append(*db, param)
@@ -35,8 +33,8 @@ func Store(dbName string, param interface{}) bool {
 	return statOfStoring
 }
 
-func GetAll(dbName string) []interface{} {
-	result := []interface{}{}
+func GetAll(dbName string) []map[string]interface{} {
+	result := []map[string]interface{}{}
 	switch dbName {
 	case AUTHORITIES:
 		result = undeterminedAuthorities
@@ -44,7 +42,7 @@ func GetAll(dbName string) []interface{} {
 	return result
 }
 
-func dbSelector(dbName string) *[]interface{} {
+func dbSelector(dbName string) *[]map[string]interface{} {
 	dbPointer := &undeterminedAuthorities
 	switch dbName {
 	case AUTHORITIES:
