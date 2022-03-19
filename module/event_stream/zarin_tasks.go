@@ -5,9 +5,11 @@ import (
 	"time"
 
 	"zarinworld.ir/event/pkg/db"
+	"zarinworld.ir/event/pkg/log_handler"
 )
 
 func updateConfirmTransactions(trxID string) {
+	fmt.Println("send notification of confirmed > 0 authorities")
 	// call blockchair
 	//    if blockNumber === -1 => send confirm: false
 	//    if blockNumber > -1 =>
@@ -25,6 +27,7 @@ func updateConfirmTransactions(trxID string) {
 }
 
 func checkNewTransactionOfAddress(address string) {
+	log_handler.LoggerF("Checking all Undetermined authorities form Zarin BAAS", address)
 	// call blockchair
 	//    if blockNumber === -1 => send confirm: false
 	//    if blockNumber > -1 =>
@@ -41,6 +44,7 @@ func checkNewTransactionOfAddress(address string) {
 }
 
 func checkUndeterminedAuthorities() {
+	log_handler.LoggerF("Checking all Undetermined authorities form Zarin BAAS")
 	// call baas/authorities/
 	// filter { incoming_value:0 , status: "ACTIVE", expire >= now }
 	// authList []
@@ -55,7 +59,8 @@ func getUndeterminedAuthorities() []map[string]interface{} {
 	return db.GetAll(db.AUTHORITIES)
 }
 
-func currentBlock(network string) {
+func updateCurrentBlock(network string) {
+	log_handler.LoggerF("Current block number of %s updated", network)
 	// call network tatum/blockchair
 	// FIXME: change from mock to real number
 	blockNumber := map[string]interface{}{
@@ -74,6 +79,7 @@ func getCurrentBlock(network string) int {
 }
 
 func SetNewNetwork(network string) {
+	log_handler.LoggerF("Network %s added", network)
 	networkObject := map[string]interface{}{
 		"network": network,
 	}
@@ -84,9 +90,10 @@ func GetNetworkList() []map[string]interface{} {
 	return db.GetAll(db.NETWORK)
 }
 
-func SetNewAddress(network string, addres string) {
+func SetNewAddress(network string, address string) {
+	log_handler.LoggerF("Address %s in %s network added", address, network)
 	addressObject := map[string]interface{}{
-		network: addres,
+		network: address,
 	}
 	db.Store(db.ADDRESS, addressObject)
 }
