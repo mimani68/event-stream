@@ -15,7 +15,7 @@ func EventHandlerModule(stateChannel chan interface{}) {
 			updateCurrentBlock(network["network"].(string))
 		}
 	})
-	cronProxy(CRON_EVERY_10_SECONDS, func() {
+	cronProxy(CRON_EVERY_5_SECONDS, func() {
 		// Check new transactions
 		for _, address := range GetAddressList() {
 			newTransactionsList := updateNewTransactionOfAddress(address["address"].(string))
@@ -25,11 +25,26 @@ func EventHandlerModule(stateChannel chan interface{}) {
 				sendPostWebhook(updatedTrx)
 			}
 		}
-		// Dobule check status of confirm transactions
-		for _, item := range getConfirmdTransactions() {
-			updatedTrx := updateConfirmTransactions(item["txId"].(string))
+	})
+	cronProxy(CRON_EVERY_10_SECONDS, func() {
+		// Check status of new transactions and update them
+		for _, newItem := range getNewTransactionsOfAddress() {
+			updatedTrx := checkConfirmationOfSingleTransaction(newItem["trxHash"].(string))
 			updatedTrx["type"] = "confirmed transactions"
 			updatedTrx["confirmed"] = true
+			updatedTrx["confirmedCount"] = 1
+			sendPostWebhook(updatedTrx)
+		}
+		// Dobule check status of confirmed transactions for confirmedCount> 1
+		for _, newItem := range getConfirmedTransactions() {
+			updatedTrx := checkConfirmationOfSingleTransaction(newItem["trxHash"].(string))
+			updatedTrx["type"] = "confirmed transactions"
+			updatedTrx["confirmed"] = true
+			if updatedTrx["confirmedCount"] == "" {
+				updatedTrx["confirmedCount"] = 0
+			} else {
+				updatedTrx["confirmedCount"] = updatedTrx["confirmedCount"].(int) + 1
+			}
 			sendPostWebhook(updatedTrx)
 		}
 		cleanSystem()
@@ -37,7 +52,7 @@ func EventHandlerModule(stateChannel chan interface{}) {
 }
 
 func cleanSystem() {
-	log_handler.LoggerF("clean started")
+	log_handler.LoggerF("Cleaning start")
 }
 
 func stopAppliction(stateChannel chan interface{}) {

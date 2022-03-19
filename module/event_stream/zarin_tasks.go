@@ -8,9 +8,14 @@ import (
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/log_handler"
 	"zarinworld.ir/event/pkg/tatum"
+	"zarinworld.ir/event/pkg/zwbaas"
 )
 
-func updateConfirmTransactions(trxID string) map[string]interface{} {
+func getConfirmedTransactions() []map[string]interface{} {
+	return db.GetAll(db.TRANSACTIONS)
+}
+
+func checkConfirmationOfSingleTransaction(trxID string) map[string]interface{} {
 	fmt.Println("send notification of confirmed > 0 authorities")
 	// // call blockchair
 	// //    if blockNumber === -1 => send confirm: false
@@ -24,12 +29,23 @@ func updateConfirmTransactions(trxID string) map[string]interface{} {
 	// 	"trxHash":     "2sd3srjyj2wg1sfn1y3kl13a1f3fh1k543s2g1bs3jhljwj",
 	// 	"expireIn":    time.Now().Add(5 * time.Minute),
 	// }
+
+	// trxList := get()
+	// for _, item := range trxList {
+	// 	if item["blockNumber"]
+	// }
 	// db.Store(db.NEW_TRANSACTIONS, trx)
 	// fmt.Println("Check status of transaction")
 	// return trx
+
 	trx := tatum.GetTrxDetails(trxID)
 	db.Store(db.TRANSACTIONS, trx)
 	return trx
+}
+
+func getNewTransactionsOfAddress() []map[string]interface{} {
+	// log_handler.LoggerF("Get new trx of address %s", address)
+	return db.GetAll(db.NEW_TRANSACTIONS)
 }
 
 func updateNewTransactionOfAddress(address string) []map[string]interface{} {
@@ -43,23 +59,15 @@ func updateNewTransactionOfAddress(address string) []map[string]interface{} {
 	return tmp
 }
 
-// func updateUndeterminedAuthorities(address string) {
-// 	log_handler.LoggerF("Checking all Undetermined authorities form Zarin BAAS")
-// 	for _, authority := range zwbaas.GetAuthorities(address) {
-// 		db.Store(db.AUTHORITIES, authority)
-// 	}
-// }
-
 func GetUndeterminedAuthorities() []map[string]interface{} {
 	return db.GetAll(db.AUTHORITIES)
 }
 
-func updateConfirmdTransactions(newTransactionObject map[string]interface{}) {
-	db.Store(db.TRANSACTIONS, newTransactionObject)
-}
-
-func getConfirmdTransactions() []map[string]interface{} {
-	return db.GetAll(db.TRANSACTIONS)
+func updateUndeterminedAuthorities(address string) {
+	log_handler.LoggerF("Checking all Undetermined authorities form Zarin BAAS")
+	for _, authority := range zwbaas.GetAuthorities(address) {
+		db.Store(db.AUTHORITIES, authority)
+	}
 }
 
 func updateCurrentBlock(network string) {
