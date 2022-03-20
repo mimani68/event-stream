@@ -52,9 +52,9 @@ func getNewTransactionsOfAddress() []map[string]interface{} {
 }
 
 func updateNewTransactionOfAddress(network string, address string) []map[string]interface{} {
-	log_handler.LoggerF("Checking new trx of address %s", address)
+	log_handler.LoggerF("Checking new trx of address %s in network %s", address, network)
 	tmp := []map[string]interface{}{}
-	for _, transaction := range blockchair.GetAddressHistory(address) {
+	for _, transaction := range blockchair.GetAddressHistory(network, address) {
 		// if transaction["confirm"] == -1
 		tmp = append(tmp, transaction)
 		db.Store(db.NEW_TRANSACTIONS, transaction)
