@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"zarinworld.ir/event/pkg/delay"
 	"zarinworld.ir/event/pkg/log_handler"
 )
 
@@ -12,40 +13,42 @@ func EventHandlerModule(stateChannel chan interface{}) {
 	cronProxy(CRON_EVERY_2_SECONDS, func() {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
-			updateCurrentBlock(network["network"].(string))
+			go updateCurrentBlock(network["network"].(string))
 		}
 	})
 	cronProxy(CRON_EVERY_5_SECONDS, func() {
-		// Check new transactions
-		for _, address := range GetAddressList() {
-			newTransactionsList := updateNewTransactionOfAddress(address["address"].(string))
-			for _, updatedTrx := range newTransactionsList {
-				updatedTrx["type"] = "new transaction detected"
-				updatedTrx["confirmed"] = false
-				sendPostWebhook(updatedTrx)
+		for _, network := range GetNetworkList() {
+			// Check new transactions
+			for _, address := range GetAddressList() {
+				newTransactionsList := updateNewTransactionOfAddress(network["network"].(string), address["address"].(string))
+				for _, updatedTrx := range newTransactionsList {
+					updatedTrx["type"] = "new transaction detected"
+					updatedTrx["confirmedCount"] = 0
+					updatedTrx["confirmed"] = false
+					go sendPostWebhook(updatedTrx)
+				}
 			}
+			delay.SetSyncDelay(2)
 		}
 	})
 	cronProxy(CRON_EVERY_10_SECONDS, func() {
-		// Check status of new transactions and update them
-		for _, newItem := range getNewTransactionsOfAddress() {
-			updatedTrx := checkConfirmationOfSingleTransaction(newItem["trxHash"].(string))
-			updatedTrx["type"] = "confirmed transactions"
-			updatedTrx["confirmed"] = true
-			updatedTrx["confirmedCount"] = 1
-			sendPostWebhook(updatedTrx)
-		}
-		// Dobule check status of confirmed transactions for confirmedCount> 1
-		for _, newItem := range getConfirmedTransactions() {
-			updatedTrx := checkConfirmationOfSingleTransaction(newItem["trxHash"].(string))
-			updatedTrx["type"] = "confirmed transactions"
-			updatedTrx["confirmed"] = true
-			if updatedTrx["confirmedCount"] == "" {
-				updatedTrx["confirmedCount"] = 0
-			} else {
-				updatedTrx["confirmedCount"] = updatedTrx["confirmedCount"].(int) + 1
+		for _, network := range GetNetworkList() {
+			// Check status of new transactions and update them
+			for _, newItem := range getNewTransactionsOfAddress() {
+				updatedTrx := checkConfirmationOfSingleTransaction(network["network"].(string), newItem["trxHash"].(string))
+				updatedTrx["type"] = "confirmed transactions"
+				go sendPostWebhook(updatedTrx)
+				// FIXME: remove from NEW_TRANSACTIONS
 			}
-			sendPostWebhook(updatedTrx)
+			delay.SetSyncDelay(2)
+			// Dobule check status of confirmed transactions for confirmedCount> 1
+			for _, newItem := range getConfirmedTransactions() {
+				updatedTrx := checkConfirmationOfSingleTransaction(network["network"].(string), newItem["trxHash"].(string))
+				// FIXME: updatedTrx["confirmedCount"] > 5 ==> remove from TRANSACTIONS
+				updatedTrx["type"] = "confirmed transactions"
+				go sendPostWebhook(updatedTrx)
+			}
+			delay.SetSyncDelay(2)
 		}
 		cleanSystem()
 	})

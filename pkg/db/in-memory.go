@@ -38,6 +38,12 @@ func GetAll(dbName string) []map[string]interface{} {
 	return *dbMemoryAddress
 }
 
+// func RemoveObject(dbName string) []map[string]interface{} {
+// 	dbMemoryAddress := dbSelector(dbName)
+// 	index := 2
+// 	return append(*dbMemoryAddress[:index], *dbMemoryAddress[index+01:]...)
+// }
+
 func dbSelector(dbName string) *[]map[string]interface{} {
 	dbPointer := &undeterminedAuthorities
 	switch dbName {

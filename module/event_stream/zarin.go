@@ -15,8 +15,8 @@ func getConfirmedTransactions() []map[string]interface{} {
 	return db.GetAll(db.TRANSACTIONS)
 }
 
-func checkConfirmationOfSingleTransaction(trxID string) map[string]interface{} {
-	fmt.Println("send notification of confirmed > 0 authorities")
+func checkConfirmationOfSingleTransaction(network string, trxID string) map[string]interface{} {
+	// log_handler.LoggerF("Update confirmed > 0 authorities")
 	// // call blockchair
 	// //    if blockNumber === -1 => send confirm: false
 	// //    if blockNumber > -1 =>
@@ -39,6 +39,9 @@ func checkConfirmationOfSingleTransaction(trxID string) map[string]interface{} {
 	// return trx
 
 	trx := tatum.GetTrxDetails(trxID)
+	currentBlock := getCurrentBlock(network)
+	trx["confirmedCount"] = currentBlock
+	trx["confirmed"] = true
 	db.Store(db.TRANSACTIONS, trx)
 	return trx
 }
@@ -48,7 +51,7 @@ func getNewTransactionsOfAddress() []map[string]interface{} {
 	return db.GetAll(db.NEW_TRANSACTIONS)
 }
 
-func updateNewTransactionOfAddress(address string) []map[string]interface{} {
+func updateNewTransactionOfAddress(network string, address string) []map[string]interface{} {
 	log_handler.LoggerF("Checking new trx of address %s", address)
 	tmp := []map[string]interface{}{}
 	for _, transaction := range blockchair.GetAddressHistory(address) {
