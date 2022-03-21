@@ -8,6 +8,7 @@ import (
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/log_handler"
 	"zarinworld.ir/event/pkg/tatum"
+	"zarinworld.ir/event/pkg/utils"
 	"zarinworld.ir/event/pkg/zwbaas"
 )
 
@@ -89,7 +90,7 @@ func getCurrentBlock(network string) int {
 	number := 0
 	networkList := db.GetAll(db.BLOCKNUMBER)
 	for _, net := range networkList {
-		number = net[network].(int)
+		number = utils.ToInt(net[network])
 	}
 	return number
 }
