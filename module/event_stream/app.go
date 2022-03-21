@@ -10,16 +10,22 @@ import (
 	"zarinworld.ir/event/pkg/utils"
 )
 
+func EventHandlerModuleDev(stateChannel chan interface{}) {
+	for _, network := range GetNetworkList() {
+		updateCurrentBlock(utils.ToString(network["network"]))
+	}
+}
+
 func EventHandlerModule(stateChannel chan interface{}) {
 	go stopAppliction(stateChannel)
-	cronProxy(CRON_EVERY_2_SECONDS, func() {
+	cronProxy(CRON_EVERY_5_SECONDS, func() {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
 			updateCurrentBlock(utils.ToString(network["network"]))
 		}
 	})
-	delay.SetSyncDelay(5)
-	cronProxy(CRON_EVERY_5_SECONDS, func() {
+	delay.SetSyncDelay(2)
+	cronProxy(CRON_EVERY_10_SECONDS, func() {
 		for _, network := range GetNetworkList() {
 			// Check new transactions
 			for _, address := range GetAddressList() {
@@ -29,12 +35,12 @@ func EventHandlerModule(stateChannel chan interface{}) {
 					updatedTrx["confirmedCount"] = 0
 					updatedTrx["confirmed"] = false
 					go sendPostWebhook(updatedTrx)
+					delay.SetSyncDelay(2)
 				}
 			}
-			delay.SetSyncDelay(2)
 		}
 	})
-	cronProxy(CRON_EVERY_10_SECONDS, func() {
+	cronProxy(CRON_EVERY_15_SECONDS, func() {
 		for _, network := range GetNetworkList() {
 			// Check status of new transactions and update them
 			for _, newItem := range getNewTransactionsOfAddress() {
@@ -48,16 +54,16 @@ func EventHandlerModule(stateChannel chan interface{}) {
 				updatedTrx["type"] = "confirmed transactions"
 				go sendPostWebhook(updatedTrx)
 				// FIXME: remove from NEW_TRANSACTIONS
+				delay.SetSyncDelay(2)
 			}
-			delay.SetSyncDelay(2)
 			// Dobule check status of confirmed transactions for confirmedCount> 1
 			for _, newItem := range getConfirmedTransactions() {
 				updatedTrx := checkConfirmationOfSingleTransaction(network["network"].(string), newItem["trxHash"].(string))
 				// FIXME: updatedTrx["confirmedCount"] > 5 ==> remove from TRANSACTIONS
 				updatedTrx["type"] = "confirmed transactions"
 				go sendPostWebhook(updatedTrx)
+				delay.SetSyncDelay(2)
 			}
-			delay.SetSyncDelay(2)
 		}
 		cleanSystem()
 	})

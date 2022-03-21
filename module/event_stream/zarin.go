@@ -1,9 +1,6 @@
 package event_stream
 
 import (
-	"fmt"
-	"time"
-
 	"zarinworld.ir/event/pkg/blockchair"
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/log_handler"
@@ -77,13 +74,17 @@ func updateUndeterminedAuthorities(address string) {
 func updateCurrentBlock(network string) {
 	// call network tatum/blockchair
 	// FIXME: change from mock to real number
-	fakeNumber := time.Now().Unix() / 100
+	// fakeNumber := time.Now().Unix() / 100
+	// blockNumber := map[string]interface{}{
+	// 	network: fakeNumber + 1,
+	// }
+	// db.Store(db.BLOCKNUMBER, blockNumber)
 	blockNumber := map[string]interface{}{
-		network: fakeNumber + 1,
+		network: tatum.GetCurrentBlock(network),
 	}
 	db.Store(db.BLOCKNUMBER, blockNumber)
-	msg := fmt.Sprintf("Current block number of %s is %d and db update", network, blockNumber[network])
-	log_handler.LoggerF(msg)
+	// msg := fmt.Sprintf("Current block number of %s is %d and db update", network, blockNumber[network])
+	// log_handler.LoggerF(msg)
 }
 
 func getCurrentBlock(network string) int {

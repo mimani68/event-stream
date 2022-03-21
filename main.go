@@ -12,12 +12,7 @@ func main() {
 	// event_stream.SetNewAddress(config.BITCOIN, "002Qsw1v1v5Dw5O5C405LP")
 	event_stream.SetNewAddress(config.ETHEREUM, "0x2bb413fdadbb639584ea33c96a4caa3f5616ca70")
 	stateOfApplication := make(chan interface{})
-	event_stream.EventHandlerModule(stateOfApplication)
+	event_stream.EventHandlerModuleDev(stateOfApplication)
 	<-stateOfApplication
 
-	//
-	// D E V
-	//
-	// a := blockchair.GetAddressHistory(config.ETHEREUM, "0x2bb413fdadbb639584ea33c96a4caa3f5616ca70")
-	// fmt.Println(a[0]["block_id"])
 }
