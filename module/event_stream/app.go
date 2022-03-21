@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"gorm.io/gorm/utils"
 	"zarinworld.ir/event/pkg/delay"
 	"zarinworld.ir/event/pkg/log_handler"
+	"zarinworld.ir/event/pkg/utils"
 )
 
 func EventHandlerModule(stateChannel chan interface{}) {
@@ -35,7 +37,7 @@ func EventHandlerModule(stateChannel chan interface{}) {
 		for _, network := range GetNetworkList() {
 			// Check status of new transactions and update them
 			for _, newItem := range getNewTransactionsOfAddress() {
-				updatedTrx := checkConfirmationOfSingleTransaction(network["network"].(string), newItem["trxHash"].(string))
+				updatedTrx := checkConfirmationOfSingleTransaction(utils.ToString(network["network"]), utils.ToString(newItem["trxHash"]))
 				updatedTrx["type"] = "confirmed transactions"
 				go sendPostWebhook(updatedTrx)
 				// FIXME: remove from NEW_TRANSACTIONS
