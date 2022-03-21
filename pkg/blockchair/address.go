@@ -3,7 +3,7 @@ package blockchair
 import (
 	"fmt"
 
-	"zarinworld.ir/event/pkg/http_request"
+	"zarinworld.ir/event/pkg/http_proxy"
 )
 
 func GetAddressHistory(network string, address string) []map[string]interface{} {
@@ -15,8 +15,8 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 
 	// https://api.blockchair.com/bitcoin/dashboards/address/bc1qcrudsryq8gcuspdz3ddvzytt8vch6l4ugfzp5y?transaction_details=true
 	url := fmt.Sprintf("https://api.blockchair.com/%s/dashboards/address/%s?transaction_details=true", network, address)
-	httpRequest := http_request.Http{}
-	responseString, err := httpRequest.Get(url, nil)
+	httpRequest := BlockchairHttpValidation{}
+	responseString, err := http_proxy.Get(url, nil)
 	if err != nil {
 		return []map[string]interface{}{}
 	}

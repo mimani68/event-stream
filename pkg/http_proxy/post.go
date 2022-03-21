@@ -1,4 +1,4 @@
-package http_request
+package http_proxy
 
 import (
 	"bytes"

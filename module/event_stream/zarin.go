@@ -1,6 +1,8 @@
 package event_stream
 
 import (
+	"fmt"
+
 	"zarinworld.ir/event/pkg/blockchair"
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/log_handler"
@@ -36,7 +38,7 @@ func checkConfirmationOfSingleTransaction(network string, trxID string) map[stri
 	// fmt.Println("Check status of transaction")
 	// return trx
 
-	trx := tatum.GetTrxDetails(trxID)
+	trx := tatum.GetTrxDetails(network, trxID)
 	currentBlock := getCurrentBlock(network)
 	trx["confirmedCount"] = currentBlock
 	trx["confirmed"] = true
@@ -53,9 +55,10 @@ func updateNewTransactionOfAddress(network string, address string) []map[string]
 	log_handler.LoggerF("Checking new trx of address %s in network %s", address, network)
 	tmp := []map[string]interface{}{}
 	for _, transaction := range blockchair.GetAddressHistory(network, address) {
-		// if transaction["confirm"] == -1
-		tmp = append(tmp, transaction)
-		db.Store(db.NEW_TRANSACTIONS, transaction)
+		if transaction["block_id"] == -1 {
+			tmp = append(tmp, transaction)
+			db.Store(db.NEW_TRANSACTIONS, transaction)
+		}
 	}
 	return tmp
 }
@@ -72,19 +75,13 @@ func updateUndeterminedAuthorities(address string) {
 }
 
 func updateCurrentBlock(network string) {
-	// call network tatum/blockchair
-	// FIXME: change from mock to real number
-	// fakeNumber := time.Now().Unix() / 100
-	// blockNumber := map[string]interface{}{
-	// 	network: fakeNumber + 1,
-	// }
-	// db.Store(db.BLOCKNUMBER, blockNumber)
-	blockNumber := map[string]interface{}{
-		network: tatum.GetCurrentBlock(network),
+	number := tatum.GetCurrentBlock(network)
+	blockNumberObject := map[string]interface{}{
+		network: number,
 	}
-	db.Store(db.BLOCKNUMBER, blockNumber)
-	// msg := fmt.Sprintf("Current block number of %s is %d and db update", network, blockNumber[network])
-	// log_handler.LoggerF(msg)
+	msg := fmt.Sprintf("Current block number of %s is %d and db update", network, number)
+	log_handler.LoggerF(msg)
+	db.Store(db.BLOCKNUMBER, blockNumberObject)
 }
 
 func getCurrentBlock(network string) int {

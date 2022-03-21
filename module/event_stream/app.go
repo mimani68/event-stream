@@ -11,9 +11,8 @@ import (
 )
 
 func EventHandlerModuleDev(stateChannel chan interface{}) {
-	for _, network := range GetNetworkList() {
-		updateCurrentBlock(utils.ToString(network["network"]))
-	}
+	updatedTrx := checkConfirmationOfSingleTransaction(config.ETHEREUM, "0x13c28d5e3a0b7a21a4b516e7d1b4f9b22f6cadeeecc93bb5b490cd99ce6f3f2b")
+	fmt.Println(updatedTrx)
 }
 
 func EventHandlerModule(stateChannel chan interface{}) {

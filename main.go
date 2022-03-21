@@ -14,5 +14,4 @@ func main() {
 	stateOfApplication := make(chan interface{})
 	event_stream.EventHandlerModuleDev(stateOfApplication)
 	<-stateOfApplication
-
 }

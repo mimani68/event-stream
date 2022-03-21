@@ -2,7 +2,7 @@ package tatum
 
 import (
 	"zarinworld.ir/event/config"
-	"zarinworld.ir/event/pkg/http_request"
+	"zarinworld.ir/event/pkg/http_proxy"
 	"zarinworld.ir/event/pkg/utils"
 )
 
@@ -17,9 +17,8 @@ func GetCurrentBlock(network string) int {
 	case config.ETHEREUM:
 		url = "https://api-eu1.tatum.io/v3/ethereum/block/current"
 	}
-	httpRequest := http_request.Http{}
 	header := map[string]string{"x-api-key": config.Tatum_token}
-	responseString, err := httpRequest.Get(url, header)
+	responseString, err := http_proxy.Get(url, header)
 	if err != nil {
 		return 0
 	}
