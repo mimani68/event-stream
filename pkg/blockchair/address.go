@@ -20,7 +20,7 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 	if err != nil {
 		return []map[string]interface{}{}
 	}
-	trxList, err := httpRequest.ParseBlockchairResult(responseString, address, network)
+	trxList, err := httpRequest.ParseBlockchairListResult(responseString, address, network)
 	if err != nil {
 		return []map[string]interface{}{}
 	}

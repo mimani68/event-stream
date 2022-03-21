@@ -64,6 +64,8 @@ func EventHandlerModule(stateChannel chan interface{}) {
 				delay.SetSyncDelay(2)
 			}
 		}
+	})
+	cronProxy(CRON_EVERY_30_MINUTES, func() {
 		cleanSystem()
 	})
 }

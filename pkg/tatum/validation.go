@@ -13,20 +13,6 @@ type TatumHttpValidation struct{}
 func (h *TatumHttpValidation) ParseTatumResult(value string, network string) (map[string]interface{}, error) {
 	response := map[string]interface{}{}
 
-	// templateCommand := `jq '.data["salam"]'`
-	// // templateCommand := `echo '` + value + `' | jq -c '.data["` + address + `"]`
-	// cmd := exec.Command("sh", "-c", templateCommand)
-	// list, err := cmd.CombinedOutput()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// ctx := v8.NewContext()
-	// jsCode := fmt.Sprintf("result=(JSON.parse('%s')).data['%s'].calls[0].block_id", value, address)
-	// ctx.RunScript(jsCode, "app.js")
-	// val, _ := ctx.RunScript("result", "app.js")
-	// fmt.Printf("%s", val)
-
 	// switch network {
 	// case "bitcoin":
 	// 	value, _ = h.bitcoinResponseCleaner(value, address)

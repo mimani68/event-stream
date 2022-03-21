@@ -22,22 +22,6 @@ func checkConfirmationOfSingleTransaction(network string, trxID string) map[stri
 	// //    if blockNumber > -1 =>
 	// //			call currentBlock number => x
 	// //			send { confirm: true, confirmCount: x }
-	// trx := map[string]interface{}{
-	// 	"id":          "c4e064b8-a6b2-11ec-a14d-9f5202368044",
-	// 	"value":       "0",
-	// 	"blockNumber": "-1",
-	// 	"trxHash":     "2sd3srjyj2wg1sfn1y3kl13a1f3fh1k543s2g1bs3jhljwj",
-	// 	"expireIn":    time.Now().Add(5 * time.Minute),
-	// }
-
-	// trxList := get()
-	// for _, item := range trxList {
-	// 	if item["blockNumber"]
-	// }
-	// db.Store(db.NEW_TRANSACTIONS, trx)
-	// fmt.Println("Check status of transaction")
-	// return trx
-
 	trx := tatum.GetTrxDetails(network, trxID)
 	currentBlock := getCurrentBlock(network)
 	trx["confirmedCount"] = currentBlock

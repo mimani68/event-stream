@@ -10,7 +10,7 @@ const (
 	CRON_EVERY_10_SECONDS = "*/10 * * * * *"
 	CRON_EVERY_15_SECONDS = "*/15 * * * * *"
 	CRON_EVERY_30_SECONDS = "*/30 * * * * *"
-	CRON_EVERY_60_SECONDS = "* * * * *"
+	CRON_EVERY_30_MINUTES = "*/30 * * * *"
 )
 
 func cronProxy(cronTimeString string, cb func()) (bool, error) {
