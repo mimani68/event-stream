@@ -14,7 +14,7 @@ import (
 
 func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	// Check confirm more than "config.Confirm_Count"
-	if utils.ToInt(payload["confirmCount"]) >= config.Confirm_Count {
+	if utils.ToInt(payload["confirmCount"]) > config.Confirm_Count {
 		return false, nil
 	}
 	for _, event := range db.GetAll(db.EVENTS) {
@@ -28,6 +28,8 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 			utils.ToString(payload["type"]) == utils.ToString(eventPayload["type"]) &&
 			utils.ToString(payload["trxHash"]) == utils.ToString(eventPayload["trxHash"]) &&
 			utils.ToString(payload["trxId"]) == utils.ToString(eventPayload["trxId"]) &&
+			utils.ToString(payload["address"]) == utils.ToString(eventPayload["address"]) &&
+			utils.ToString(payload["network"]) == utils.ToString(eventPayload["network"]) &&
 			utils.ToString(payload["value"]) == utils.ToString(eventPayload["value"]) &&
 			utils.ToString(payload["confirmCount"]) == utils.ToString(eventPayload["confirmCount"])
 		// Check duplicated request

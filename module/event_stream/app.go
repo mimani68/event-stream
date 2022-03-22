@@ -17,34 +17,34 @@ func EventHandlerModuleDev(stateChannel chan interface{}) {
 
 	StoreEvent(map[string]interface{}{
 		"type":         "sample",
-		"confirmCount": 3,
+		"confirmCount": 2,
 		"time":         time.Now().Format(time.RFC3339),
 	})
 	StoreEvent(map[string]interface{}{
+		"type":         "sample",
+		"confirmCount": 3,
+		"time":         time.Now().Format(time.RFC3339),
+	})
+	sendPostWebhook(map[string]interface{}{
 		"type":         "sample",
 		"confirmCount": 4,
 		"time":         time.Now().Format(time.RFC3339),
 	})
 	sendPostWebhook(map[string]interface{}{
 		"type":         "sample",
-		"confirmCount": 5,
+		"confirmCount": 4,
 		"time":         time.Now().Format(time.RFC3339),
 	})
-	// sendPostWebhook(map[string]interface{}{
-	// 	"type":         "sample",
-	// 	"confirmCount": 4,
-	// 	"time":         time.Now().Format(time.RFC3339),
-	// })
-	// sendPostWebhook(map[string]interface{}{
-	// 	"type":         "sample",
-	// 	"confirmCount": 4,
-	// 	"time":         time.Now().Format(time.RFC3339),
-	// })
-	// sendPostWebhook(map[string]interface{}{
-	// 	"type":         "sample",
-	// 	"confirmCount": 5,
-	// 	"time":         time.Now().Format(time.RFC3339),
-	// })
+	sendPostWebhook(map[string]interface{}{
+		"type":         "sample",
+		"confirmCount": 4,
+		"time":         time.Now().Format(time.RFC3339),
+	})
+	sendPostWebhook(map[string]interface{}{
+		"type":         "sample",
+		"confirmCount": 4,
+		"time":         time.Now().Format(time.RFC3339),
+	})
 	a := db.GetAll(db.EVENTS)
 	fmt.Println(a)
 }
