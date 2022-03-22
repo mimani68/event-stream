@@ -3,7 +3,10 @@ package event_stream
 import (
 	"fmt"
 	"math"
+	"time"
 
+	"github.com/google/uuid"
+	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/blockchair"
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/log_handler"
@@ -90,4 +93,15 @@ func SetNewAddress(network string, address string) {
 
 func GetAddressList() []map[string]interface{} {
 	return db.GetAll(db.ADDRESS)
+}
+
+func StoreEvent(payload map[string]interface{}) {
+	event := map[string]interface{}{
+		"id":      uuid.New(),
+		"type":    utils.ToString(payload["type"]),
+		"payload": payload,
+		"url":     config.WebhookAddress,
+		"time":    time.Now().Format(time.RFC3339),
+	}
+	db.Store(db.EVENTS, event)
 }

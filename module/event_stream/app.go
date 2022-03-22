@@ -5,14 +5,48 @@ import (
 	"time"
 
 	"zarinworld.ir/event/config"
+	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/delay"
 	"zarinworld.ir/event/pkg/log_handler"
 	"zarinworld.ir/event/pkg/utils"
 )
 
 func EventHandlerModuleDev(stateChannel chan interface{}) {
-	updatedTrx := checkConfirmationOfSingleTransaction(config.ETHEREUM, "0x13c28d5e3a0b7a21a4b516e7d1b4f9b22f6cadeeecc93bb5b490cd99ce6f3f2b")
-	fmt.Println(updatedTrx)
+	// updatedTrx := checkConfirmationOfSingleTransaction(config.ETHEREUM, "0x13c28d5e3a0b7a21a4b516e7d1b4f9b22f6cadeeecc93bb5b490cd99ce6f3f2b")
+	// fmt.Println(updatedTrx)
+
+	StoreEvent(map[string]interface{}{
+		"type":         "sample",
+		"confirmCount": 3,
+		"time":         time.Now().Format(time.RFC3339),
+	})
+	StoreEvent(map[string]interface{}{
+		"type":         "sample",
+		"confirmCount": 4,
+		"time":         time.Now().Format(time.RFC3339),
+	})
+	sendPostWebhook(map[string]interface{}{
+		"type":         "sample",
+		"confirmCount": 5,
+		"time":         time.Now().Format(time.RFC3339),
+	})
+	// sendPostWebhook(map[string]interface{}{
+	// 	"type":         "sample",
+	// 	"confirmCount": 4,
+	// 	"time":         time.Now().Format(time.RFC3339),
+	// })
+	// sendPostWebhook(map[string]interface{}{
+	// 	"type":         "sample",
+	// 	"confirmCount": 4,
+	// 	"time":         time.Now().Format(time.RFC3339),
+	// })
+	// sendPostWebhook(map[string]interface{}{
+	// 	"type":         "sample",
+	// 	"confirmCount": 5,
+	// 	"time":         time.Now().Format(time.RFC3339),
+	// })
+	a := db.GetAll(db.EVENTS)
+	fmt.Println(a)
 }
 
 func EventHandlerModule(stateChannel chan interface{}) {

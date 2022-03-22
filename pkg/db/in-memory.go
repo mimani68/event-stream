@@ -6,6 +6,7 @@ var networkList []map[string]interface{}
 var addresList []map[string]interface{}
 var newTransactions []map[string]interface{}
 var transactions []map[string]interface{}
+var events []map[string]interface{}
 
 const (
 	AUTHORITIES      = "authority"
@@ -14,6 +15,7 @@ const (
 	ADDRESS          = "address"
 	TRANSACTIONS     = "trx"
 	NEW_TRANSACTIONS = "new trx"
+	EVENTS           = "events"
 )
 
 func Store(dbName string, param map[string]interface{}) bool {
@@ -59,6 +61,9 @@ func dbSelector(dbName string) *[]map[string]interface{} {
 		dbPointer = &transactions
 	case NEW_TRANSACTIONS:
 		dbPointer = &newTransactions
+	case EVENTS:
+		dbPointer = &events
+
 	}
 	return dbPointer
 }

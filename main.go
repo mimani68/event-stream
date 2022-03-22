@@ -8,12 +8,12 @@ import (
 
 func main() {
 	event_stream.SetNewNetwork(config.ETHEREUM)
-	// event_stream.SetNewNetwork(config.BITCOIN)
+	event_stream.SetNewNetwork(config.BITCOIN)
 	for _, address := range config.AddressList {
 		event_stream.SetNewAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
 	}
 	stateOfApplication := make(chan interface{})
-	event_stream.EventHandlerModule(stateOfApplication)
-	// event_stream.EventHandlerModuleDev(stateOfApplication)
+	// event_stream.EventHandlerModule(stateOfApplication)
+	event_stream.EventHandlerModuleDev(stateOfApplication)
 	<-stateOfApplication
 }
