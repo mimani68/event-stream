@@ -2,36 +2,30 @@ package event_stream
 
 import (
 	"fmt"
+	"math"
 
 	"zarinworld.ir/event/pkg/blockchair"
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/log_handler"
 	"zarinworld.ir/event/pkg/tatum"
 	"zarinworld.ir/event/pkg/utils"
-	"zarinworld.ir/event/pkg/zwbaas"
 )
 
-func getConfirmedTransactions() []map[string]interface{} {
+func getconfirmTransactions() []map[string]interface{} {
 	return db.GetAll(db.TRANSACTIONS)
 }
 
 func checkConfirmationOfSingleTransaction(network string, trxID string) map[string]interface{} {
-	// log_handler.LoggerF("Update confirmed > 0 authorities")
-	// // call blockchair
-	// //    if blockNumber === -1 => send confirm: false
-	// //    if blockNumber > -1 =>
-	// //			call currentBlock number => x
-	// //			send { confirm: true, confirmCount: x }
+	log_handler.LoggerF("Update trx %s that hash confirm > 0 on %s network", trxID, network)
 	trx := tatum.GetTrxDetails(network, trxID)
 	currentBlock := getCurrentBlock(network)
-	trx["confirmedCount"] = currentBlock
-	trx["confirmed"] = true
+	trx["confirmCount"] = utils.ToString(math.Abs(float64(currentBlock - utils.ToInt(trx["blockNumber"]))))
+	trx["confirm"] = true
 	db.Store(db.TRANSACTIONS, trx)
 	return trx
 }
 
 func getNewTransactionsOfAddress() []map[string]interface{} {
-	// log_handler.LoggerF("Get new trx of address %s", address)
 	return db.GetAll(db.NEW_TRANSACTIONS)
 }
 
@@ -42,6 +36,9 @@ func updateNewTransactionOfAddress(network string, address string) []map[string]
 		if transaction["block_id"] == -1 {
 			tmp = append(tmp, transaction)
 			db.Store(db.NEW_TRANSACTIONS, transaction)
+		} else {
+			tmp = append(tmp, transaction)
+			db.Store(db.TRANSACTIONS, transaction)
 		}
 	}
 	return tmp
@@ -49,13 +46,6 @@ func updateNewTransactionOfAddress(network string, address string) []map[string]
 
 func GetUndeterminedAuthorities() []map[string]interface{} {
 	return db.GetAll(db.AUTHORITIES)
-}
-
-func updateUndeterminedAuthorities(address string) {
-	log_handler.LoggerF("Checking all Undetermined authorities form Zarin BAAS")
-	for _, authority := range zwbaas.GetAuthorities(address) {
-		db.Store(db.AUTHORITIES, authority)
-	}
 }
 
 func updateCurrentBlock(network string) {

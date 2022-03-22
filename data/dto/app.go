@@ -1,13 +1,13 @@
 package dto
 
 type Transaction struct {
-	Id             string
-	TrxHash        string
-	Value          string
-	BlockNumber    string
-	ExpireIn       string
-	Confirmed      string
-	ConfirmedCount string
+	Id           string
+	TrxHash      string
+	Value        string
+	BlockNumber  string
+	ExpireIn     string
+	confirm      string
+	confirmCount string
 }
 
 type Authority struct {

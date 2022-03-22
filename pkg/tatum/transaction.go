@@ -21,7 +21,7 @@ func GetTrxDetails(network string, trxID string) map[string]interface{} {
 	header := map[string]string{"x-api-key": config.Tatum_token}
 	responseString, err := http_proxy.Get(url, header)
 	if err != nil {
-		log_handler.LoggerF("Problem in GetTrxDetails of %s in %s network", trxID, network)
+		log_handler.LoggerF("%sTATUM%s didn't response on %s network", log_handler.ColorRed, log_handler.ColorReset, network)
 	}
 	validator := TatumHttpValidation{}
 	result, _ := validator.ParseTatumResult(responseString, network)

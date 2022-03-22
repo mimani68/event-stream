@@ -31,8 +31,6 @@ func EventHandlerModule(stateChannel chan interface{}) {
 				newTransactionsList := updateNewTransactionOfAddress(utils.ToString(network["network"]), address["address"].(string))
 				for _, updatedTrx := range newTransactionsList {
 					updatedTrx["type"] = "new transaction detected"
-					updatedTrx["confirmedCount"] = 0
-					updatedTrx["confirmed"] = false
 					go sendPostWebhook(updatedTrx)
 					delay.SetSyncDelay(2)
 				}
@@ -50,16 +48,16 @@ func EventHandlerModule(stateChannel chan interface{}) {
 				case config.ETHEREUM:
 					updatedTrx = checkConfirmationOfSingleTransaction(utils.ToString(network["network"]), utils.ToString(newItem["transaction_hash"]))
 				}
-				updatedTrx["type"] = "confirmed transactions"
+				updatedTrx["type"] = "confirm transactions"
 				go sendPostWebhook(updatedTrx)
 				// FIXME: remove from NEW_TRANSACTIONS
 				delay.SetSyncDelay(2)
 			}
-			// Dobule check status of confirmed transactions for confirmedCount> 1
-			for _, newItem := range getConfirmedTransactions() {
+			// Dobule check status of confirm transactions for confirmCount> 1
+			for _, newItem := range getconfirmTransactions() {
 				updatedTrx := checkConfirmationOfSingleTransaction(network["network"].(string), newItem["trxHash"].(string))
-				// FIXME: updatedTrx["confirmedCount"] > 5 ==> remove from TRANSACTIONS
-				updatedTrx["type"] = "confirmed transactions"
+				// FIXME: updatedTrx["confirmCount"] > 5 ==> remove from TRANSACTIONS
+				updatedTrx["type"] = "confirm transactions"
 				go sendPostWebhook(updatedTrx)
 				delay.SetSyncDelay(2)
 			}
