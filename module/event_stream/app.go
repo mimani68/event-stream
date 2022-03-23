@@ -19,12 +19,12 @@ func EventHandlerModuleDev(stateChannel chan interface{}) {
 		"type":         "sample",
 		"confirmCount": 2,
 		"time":         time.Now().Format(time.RFC3339),
-	})
+	}, true, nil)
 	StoreEvent(map[string]interface{}{
 		"type":         "sample",
 		"confirmCount": 3,
 		"time":         time.Now().Format(time.RFC3339),
-	})
+	}, true, nil)
 	sendPostWebhook(map[string]interface{}{
 		"type":         "sample",
 		"confirmCount": 4,
@@ -55,9 +55,9 @@ func EventHandlerModule(stateChannel chan interface{}) {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
 			updateCurrentBlock(utils.ToString(network["network"]))
+			delay.SetSyncDelay(1)
 		}
 	})
-	delay.SetSyncDelay(2)
 	cronProxy(CRON_EVERY_10_SECONDS, func() {
 		for _, network := range GetNetworkList() {
 			// Check new transactions

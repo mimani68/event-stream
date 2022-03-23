@@ -19,9 +19,6 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	}
 	for _, event := range db.GetAll(db.EVENTS) {
 		eventPayload := event["payload"].(map[string]interface{})
-		// eventPayload["time"] = ""
-		// payloadVirtual := payload
-		// payloadVirtual["time"] = ""
 		timeString, _ := time.Parse(time.RFC3339, event["time"].(string))
 		isDuplicatedRequest := utils.ToString(payload["hash"]) == utils.ToString(eventPayload["hash"]) &&
 			utils.ToString(payload["id"]) == utils.ToString(eventPayload["id"]) &&
@@ -50,9 +47,10 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	_, err := http.Post(config.WebhookAddress, "application/json", requestBody)
 	if err != nil {
 		log_handler.LoggerF("Error in sending webhook to %s%s%s", log_handler.ColorRed, config.WebhookAddress, log_handler.ColorReset)
+		StoreEvent(payload, false, err)
 		return false, err
 	}
 	log_handler.LoggerF("Message sent with type: %s%s%s to \"config.WebhookAddress\"", log_handler.ColorGreen, payload["type"].(string), log_handler.ColorReset)
-	StoreEvent(payload)
+	StoreEvent(payload, true, nil)
 	return true, nil
 }

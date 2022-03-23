@@ -95,13 +95,15 @@ func GetAddressList() []map[string]interface{} {
 	return db.GetAll(db.ADDRESS)
 }
 
-func StoreEvent(payload map[string]interface{}) {
+func StoreEvent(payload map[string]interface{}, sendingStatus bool, failureObject error) {
 	event := map[string]interface{}{
-		"id":      uuid.New(),
-		"type":    utils.ToString(payload["type"]),
-		"payload": payload,
-		"url":     config.WebhookAddress,
-		"time":    time.Now().Format(time.RFC3339),
+		"id":             uuid.New(),
+		"type":           utils.ToString(payload["type"]),
+		"payload":        payload,
+		"url":            config.WebhookAddress,
+		"time":           time.Now().Format(time.RFC3339),
+		"sendingStatus":  sendingStatus,
+		"failureDetails": failureObject,
 	}
 	db.Store(db.EVENTS, event)
 }
