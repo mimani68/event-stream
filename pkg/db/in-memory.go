@@ -24,11 +24,14 @@ func Store(dbName string, param map[string]interface{}) bool {
 	if len(*db) == 0 {
 		*db = append(*db, param)
 		statOfStoring = true
-	}
-	for index, value := range *db {
-		if value["id"] == param["id"] {
-			(*db)[index] = param
-		} else {
+	} else {
+		for index, value := range *db {
+			if value["id"] == param["id"] {
+				(*db)[index] = param
+				statOfStoring = true
+			}
+		}
+		if !statOfStoring {
 			*db = append(*db, param)
 		}
 	}
