@@ -23,8 +23,8 @@ COPY . /src
 
 # Build components.
 # Put built binaries and runtime resources in /app dir ready to be copied over or used.
-RUN go install -installsuffix cgo -ldflags="-w -s" && \
-    cp -r $GOPATH/bin/service /app/
+RUN go build -o ./dist/main -ldflags="-w -s" && \
+    cp -r /src/dist/main /app/
 
 #
 # 2. Runtime Container
@@ -54,4 +54,4 @@ COPY --from=build /app /app/
 
 EXPOSE 3000
 
-CMD ["./service"]
+CMD ["./main"]
