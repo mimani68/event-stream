@@ -2,7 +2,6 @@ package blockchair
 
 import (
 	"fmt"
-	"math"
 
 	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/db"
@@ -38,7 +37,7 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 		case config.ETHEREUM:
 			trx["confirmCount"] = currentBlock - utils.ToInt(trx["block_id"])
 		case config.BITCOIN:
-			trx["confirmCount"] = utils.ToString(math.Abs(float64(currentBlock - utils.ToInt(trx["blockNumber"]))))
+			trx["confirmCount"] = currentBlock - utils.ToInt(trx["block_id"])
 		}
 	}
 	return trxList
