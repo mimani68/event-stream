@@ -11,7 +11,7 @@ import (
 	"zarinworld.ir/event/pkg/utils"
 )
 
-func EventHandlerModuleDev(stateChannel chan interface{}) {
+func EventHandlerModuleDev(stateChannel chan string) {
 	// updatedTrx := checkConfirmationOfSingleTransaction(config.ETHEREUM, "0x13c28d5e3a0b7a21a4b516e7d1b4f9b22f6cadeeecc93bb5b490cd99ce6f3f2b")
 	// fmt.Println(updatedTrx)
 
@@ -49,8 +49,7 @@ func EventHandlerModuleDev(stateChannel chan interface{}) {
 	fmt.Println(a)
 }
 
-func EventHandlerModule(stateChannel chan interface{}) {
-	go stopAppliction(stateChannel)
+func EventHandlerModule(stateChannel chan string) {
 	cronProxy(CRON_EVERY_5_SECONDS, func() {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
@@ -85,7 +84,7 @@ func EventHandlerModule(stateChannel chan interface{}) {
 				updatedTrx["type"] = "confirm transactions"
 				go sendPostWebhook(updatedTrx)
 				// FIXME: remove from NEW_TRANSACTIONS
-				delay.SetSyncDelay(2)
+				delay.SetSyncDelay(1)
 			}
 			// Dobule check status of confirm transactions for confirmCount> 1
 			for _, newItem := range getconfirmTransactions() {
@@ -93,12 +92,15 @@ func EventHandlerModule(stateChannel chan interface{}) {
 				// FIXME: updatedTrx["confirmCount"] > 5 ==> remove from TRANSACTIONS
 				updatedTrx["type"] = "confirm transactions"
 				go sendPostWebhook(updatedTrx)
-				delay.SetSyncDelay(2)
+				delay.SetSyncDelay(1)
 			}
 		}
 	})
 	cronProxy(CRON_EVERY_30_MINUTES, func() {
 		cleanSystem()
+	})
+	cronProxy(CRON_AT_4_OCLOCK, func() {
+		stopAppliction(stateChannel)
 	})
 }
 
@@ -106,8 +108,7 @@ func cleanSystem() {
 	log_handler.LoggerF("Cleaning start")
 }
 
-func stopAppliction(stateChannel chan interface{}) {
-	time.Sleep(7 * 24 * 3600 * time.Second)
+func stopAppliction(st chan string) {
+	st <- "DONE"
 	defer fmt.Printf("The application stoped at [%s]\n", time.Now().Format(time.RFC3339))
-	stateChannel <- "done"
 }

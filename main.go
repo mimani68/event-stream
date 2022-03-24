@@ -14,7 +14,7 @@ func main() {
 	for _, address := range config.AddressList {
 		event_stream.SetNewAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
 	}
-	stateOfApplication := make(chan interface{})
+	stateOfApplication := make(chan string)
 	if os.Getenv("ENV") == "production" {
 		event_stream.EventHandlerModule(stateOfApplication)
 	} else {

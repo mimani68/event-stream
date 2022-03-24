@@ -1,5 +1,8 @@
+[] run-time address storing from restful-api
 [] encrypt payload of webhook
 [] store data in redis
+[] event log delivery from restful api to ZWBAAS
 [] test bitcoin
+[] env file
 [*] check sent old webhook before new one
 [*] store state of sending webhook
