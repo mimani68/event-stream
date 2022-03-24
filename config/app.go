@@ -1,7 +1,13 @@
 package config
 
-const (
-	WebhookAddress = "http://localhost:3000"
-	Tatum_token    = "b211febc-6e35-4430-959d-9ae103799f4b"
-	Confirm_Count  = 5
+import (
+	"os"
+	"strconv"
+)
+
+var (
+	Envirnoment      = os.Getenv("ENV")
+	WebhookAddress   = os.Getenv("CLIENT_END_POINT")
+	Tatum_token      = os.Getenv("TATUM_API_TOKEN")
+	Confirm_Count, _ = strconv.Atoi(os.Getenv("CONFIRM_COUNT"))
 )

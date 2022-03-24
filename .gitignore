@@ -22,3 +22,6 @@ Thumbs.db
 # Distribution files
 /dist
 /build
+
+# Env files
+.env
