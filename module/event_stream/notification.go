@@ -20,10 +20,11 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	for _, event := range db.GetAll(db.EVENTS) {
 		eventPayload := event["payload"].(map[string]interface{})
 		timeString, _ := time.Parse(time.RFC3339, event["time"].(string))
-		isDuplicatedRequest := utils.ToString(payload["hash"]) == utils.ToString(eventPayload["hash"]) &&
-			utils.ToString(payload["id"]) == utils.ToString(eventPayload["id"]) &&
+		isDuplicatedRequest := utils.ToString(payload["id"]) == utils.ToString(eventPayload["id"]) &&
 			utils.ToString(payload["type"]) == utils.ToString(eventPayload["type"]) &&
+			utils.ToString(payload["hash"]) == utils.ToString(eventPayload["hash"]) &&
 			utils.ToString(payload["trxHash"]) == utils.ToString(eventPayload["trxHash"]) &&
+			utils.ToString(payload["transaction_hash"]) == utils.ToString(eventPayload["transaction_hash"]) &&
 			utils.ToString(payload["trxId"]) == utils.ToString(eventPayload["trxId"]) &&
 			utils.ToString(payload["address"]) == utils.ToString(eventPayload["address"]) &&
 			utils.ToString(payload["network"]) == utils.ToString(eventPayload["network"]) &&
@@ -41,6 +42,11 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 		if !config.Simulate_new_request && utils.ToInt(eventPayload["confirmCount"]) > config.ConfirmCount {
 			return false, nil
 		}
+	}
+	if payload["transaction_hash"] != nil {
+		payload["trxId"] = utils.ToString(payload["transaction_hash"])
+	} else if payload["hash"] != nil {
+		payload["trxId"] = utils.ToString(payload["hash"])
 	}
 	postBody, _ := json.Marshal(payload)
 	requestBody := bytes.NewBuffer(postBody)
