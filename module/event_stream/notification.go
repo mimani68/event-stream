@@ -14,7 +14,7 @@ import (
 
 func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	// Check confirm more than "config.Confirm_Count"
-	if utils.ToInt(payload["confirmCount"]) > config.Confirm_Count {
+	if utils.ToInt(payload["confirmCount"]) > config.ConfirmCount {
 		return false, nil
 	}
 	for _, event := range db.GetAll(db.EVENTS) {
@@ -38,7 +38,7 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 			return false, nil
 		}
 		// Check "confirmCount" less than config.Confirm_Count
-		if utils.ToInt(eventPayload["confirmCount"]) > config.Confirm_Count {
+		if utils.ToInt(eventPayload["confirmCount"]) > config.ConfirmCount {
 			return false, nil
 		}
 	}

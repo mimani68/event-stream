@@ -18,7 +18,7 @@ func GetTrxDetails(network string, trxID string) map[string]interface{} {
 	case config.ETHEREUM:
 		url = "https://api-eu1.tatum.io/v3/ethereum/transaction/" + utils.ToString(trxID)
 	}
-	header := map[string]string{"x-api-key": config.Tatum_token}
+	header := map[string]string{"x-api-key": config.TatumToken}
 	responseString, err := http_proxy.Get(url, header)
 	if err != nil {
 		log_handler.LoggerF("%sTATUM%s didn't response on %s network", log_handler.ColorRed, log_handler.ColorReset, network)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 
+	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/http_proxy"
 	"zarinworld.ir/event/pkg/log_handler"
@@ -25,14 +26,20 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 		return []map[string]interface{}{}
 	}
 	currentBlock := 0
-	networkList := db.GetAll(db.BLOCKNUMBER)
-	for _, net := range networkList {
-		currentBlock = utils.ToInt(net["network"])
+	for _, blockPerNetwork := range db.GetAll(db.BLOCKNUMBER) {
+		if blockPerNetwork["id"] == network {
+			currentBlock = utils.ToInt(blockPerNetwork[network])
+		}
 	}
 
-	for _, v := range trxList {
-		v["confirm"] = false
-		v["confirmCount"] = utils.ToString(math.Abs(float64(currentBlock - utils.ToInt(v["blockNumber"]))))
+	for _, trx := range trxList {
+		trx["confirm"] = false
+		switch network {
+		case config.ETHEREUM:
+			trx["confirmCount"] = currentBlock - utils.ToInt(trx["block_id"])
+		case config.BITCOIN:
+			trx["confirmCount"] = utils.ToString(math.Abs(float64(currentBlock - utils.ToInt(trx["blockNumber"]))))
+		}
 	}
 	return trxList
 }

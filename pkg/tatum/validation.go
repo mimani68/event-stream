@@ -54,3 +54,16 @@ func (h *TatumHttpValidation) bitcoinResponseCleaner(value string, address strin
 	}
 	return fmt.Sprintf("%s", cleanedText), nil
 }
+
+func (h *TatumHttpValidation) bitcoinCurrentBlockResponseParser(value string) int {
+	response := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(value), &response); err != nil {
+		log_handler.LoggerF(err.Error())
+		return 0
+	}
+	if response["blocks"] != nil || response["blocks"] != "" {
+		return int(response["blocks"].(float64))
+	} else {
+		return 0
+	}
+}

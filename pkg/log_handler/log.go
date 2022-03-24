@@ -24,6 +24,14 @@ func LoggerF(template string, params ...string) {
 		template = fmt.Sprintf(template, params[0], params[1], params[2])
 	case 4:
 		template = fmt.Sprintf(template, params[0], params[1], params[2], params[3])
+	case 5:
+		template = fmt.Sprintf(template, params[0], params[1], params[2], params[3], params[4])
+	case 6:
+		template = fmt.Sprintf(template, params[0], params[1], params[2], params[3], params[4], params[5])
+	case 7:
+		template = fmt.Sprintf(template, params[0], params[1], params[2], params[3], params[4], params[5], params[6])
+	case 8:
+		template = fmt.Sprintf(template, params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7])
 	default:
 		template = template
 	}
