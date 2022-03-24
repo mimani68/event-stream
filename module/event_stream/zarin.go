@@ -2,7 +2,6 @@ package event_stream
 
 import (
 	"fmt"
-	"math"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,7 +21,7 @@ func checkConfirmationOfSingleTransaction(network string, trxID string) map[stri
 	log_handler.LoggerF("Update trx %s that hash confirm > 0 on %s network", trxID, network)
 	trx := tatum.GetTrxDetails(network, trxID)
 	currentBlock := getCurrentBlock(network)
-	trx["confirmCount"] = utils.ToString(math.Abs(float64(currentBlock - utils.ToInt(trx["blockNumber"]))))
+	trx["confirmCount"] = currentBlock - utils.ToInt(trx["blockNumber"])
 	trx["confirm"] = true
 	db.Store(db.TRANSACTIONS, trx)
 	return trx
@@ -33,10 +32,22 @@ func getNewTransactions() []map[string]interface{} {
 }
 
 func updateNewTransactionOfAddress(network string, address string) []map[string]interface{} {
-	log_handler.LoggerF("Checking new trx of address %s in network %s", address, network)
+	log_handler.LoggerF("Checking new trx of address %s%s%s in network %s%s%s", log_handler.ColorGreen, address, log_handler.ColorReset, log_handler.ColorGreen, network, log_handler.ColorReset)
 	newTrxList := []map[string]interface{}{}
+	i := 0
 	for _, transaction := range blockchair.GetAddressHistory(network, address) {
+		transaction["network"] = network
+		//
+		// Dev: only for simulate one new transaction
+		//
+		if config.Simulate_new_request {
+			if i == 0 {
+				transaction["block_id"] = -1
+				i = 1000
+			}
+		}
 		if transaction["block_id"] == -1 {
+			transaction["confirmCount"] = 0
 			newTrxList = append(newTrxList, transaction)
 			db.Store(db.NEW_TRANSACTIONS, transaction)
 		} else {

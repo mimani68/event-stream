@@ -25,21 +25,21 @@ func EventHandlerModuleDev(stateChannel chan string) {
 			delay.SetSyncDelay(2)
 		}
 	}
-	// for _, newItem := range getNewTransactionsOfAddress() {
-	// 	var updatedTrx map[string]interface{}
-	// 	switch network["network"] {
-	// 	case config.BITCOIN:
-	// 		updatedTrx = checkConfirmationOfSingleTransaction(utils.ToString(network["network"]), utils.ToString(newItem["trxHash"]))
-	// 	case config.ETHEREUM:
-	// 		updatedTrx = checkConfirmationOfSingleTransaction(utils.ToString(network["network"]), utils.ToString(newItem["transaction_hash"]))
-	// 	}
-	// 	updatedTrx["type"] = "confirm transactions"
-	// 	go sendPostWebhook(updatedTrx)
-	// 	// FIXME: remove from NEW_TRANSACTIONS
-	// 	delay.SetSyncDelay(1)
-	// }
 	fmt.Println(getNewTransactions())
 	fmt.Println(getconfirmTransactions())
+	for _, newItem := range getNewTransactions() {
+		var updatedTrx map[string]interface{}
+		switch newItem["network"] {
+		case config.BITCOIN:
+			updatedTrx = checkConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["hash"]))
+		case config.ETHEREUM:
+			updatedTrx = checkConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["transaction_hash"]))
+		}
+		updatedTrx["type"] = "confirm transactions"
+		go sendPostWebhook(updatedTrx)
+		// FIXME: remove from NEW_TRANSACTIONS
+		delay.SetSyncDelay(1)
+	}
 	// updatedTrx := checkConfirmationOfSingleTransaction(config.ETHEREUM, "0x13c28d5e3a0b7a21a4b516e7d1b4f9b22f6cadeeecc93bb5b490cd99ce6f3f2b")
 	// fmt.Println(updatedTrx)
 
@@ -86,15 +86,13 @@ func EventHandlerModule(stateChannel chan string) {
 		}
 	})
 	cronProxy(CRON_EVERY_10_SECONDS, func() {
-		for _, network := range GetNetworkList() {
-			// Check new transactions
-			for _, address := range GetAddressList() {
-				newTransactionsList := updateNewTransactionOfAddress(utils.ToString(network["network"]), address["address"].(string))
-				for _, updatedTrx := range newTransactionsList {
-					updatedTrx["type"] = "new transaction detected"
-					go sendPostWebhook(updatedTrx)
-					delay.SetSyncDelay(2)
-				}
+		// Check new transactions
+		for _, address := range GetAddressList() {
+			newTransactionsList := updateNewTransactionOfAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
+			for _, updatedTrx := range newTransactionsList {
+				updatedTrx["type"] = "new transaction detected"
+				go sendPostWebhook(updatedTrx)
+				delay.SetSyncDelay(2)
 			}
 		}
 	})

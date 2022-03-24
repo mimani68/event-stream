@@ -14,7 +14,7 @@ import (
 
 func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	// Check confirm more than "config.Confirm_Count"
-	if utils.ToInt(payload["confirmCount"]) > config.ConfirmCount {
+	if !config.Simulate_new_request && utils.ToInt(payload["confirmCount"]) > config.ConfirmCount {
 		return false, nil
 	}
 	for _, event := range db.GetAll(db.EVENTS) {
@@ -30,15 +30,15 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 			utils.ToString(payload["value"]) == utils.ToString(eventPayload["value"]) &&
 			utils.ToString(payload["confirmCount"]) == utils.ToString(eventPayload["confirmCount"])
 		// Check duplicated request
-		if isDuplicatedRequest {
+		if !config.Simulate_new_request && isDuplicatedRequest {
 			return false, nil
 		}
 		// Check for old events
-		if utils.ToInt(timeString.Add(24*time.Hour).Unix()) < int(time.Now().Unix()) {
+		if !config.Simulate_new_request && utils.ToInt(timeString.Add(24*time.Hour).Unix()) < int(time.Now().Unix()) {
 			return false, nil
 		}
 		// Check "confirmCount" less than config.Confirm_Count
-		if utils.ToInt(eventPayload["confirmCount"]) > config.ConfirmCount {
+		if !config.Simulate_new_request && utils.ToInt(eventPayload["confirmCount"]) > config.ConfirmCount {
 			return false, nil
 		}
 	}
