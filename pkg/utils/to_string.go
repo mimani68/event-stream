@@ -1,7 +1,16 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 func ToString(value interface{}) string {
-	return fmt.Sprintf("%s", value)
+	result := ""
+	if fmt.Sprintf("%T", value) == "bool" {
+		result = strconv.FormatBool(value.(bool))
+	} else {
+		result = fmt.Sprintf("%s", value)
+	}
+	return result
 }

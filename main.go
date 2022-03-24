@@ -1,15 +1,15 @@
 package main
 
 import (
-	"fmt"
-
 	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/module/event_stream"
+	"zarinworld.ir/event/pkg/log_handler"
 	"zarinworld.ir/event/pkg/utils"
 )
 
 func main() {
-	fmt.Printf("Simulation mode: %t\n", config.Simulate_new_request)
+	log_handler.LoggerF("Envirnoment: %s%s%s", log_handler.ColorYellow, utils.ToString(config.Envirnoment), log_handler.ColorReset)
+	log_handler.LoggerF("Simulation mode: %s%s%s", log_handler.ColorYellow, utils.ToString(config.Simulate_new_request), log_handler.ColorReset)
 	event_stream.SetNewNetwork(config.ETHEREUM)
 	event_stream.SetNewNetwork(config.BITCOIN)
 	for _, address := range config.AddressList {
