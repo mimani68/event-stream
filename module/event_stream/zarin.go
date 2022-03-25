@@ -21,8 +21,24 @@ func checkConfirmationOfSingleTransaction(network string, trxID string) map[stri
 	log_handler.LoggerF("Update trx %s that hash confirm > 0 on %s network", trxID, network)
 	trx := tatum.GetTrxDetails(network, trxID)
 	currentBlock := getCurrentBlock(network)
+	if trx["reciver"] != nil {
+		trx["address"] = trx["receiver"]
+	}
+	switch network {
+	case config.BITCOIN:
+		for _, addressObject := range config.AddressList {
+			if trx["outputs"] != nil {
+				for _, bitcoinOutputList := range trx["outputs"].([]interface{}) {
+					if addressObject["address"] == bitcoinOutputList.(map[string]interface{})["address"] {
+						trx["address"] = addressObject["address"]
+					}
+				}
+			}
+		}
+	}
 	trx["confirmCount"] = currentBlock - utils.ToInt(trx["blockNumber"])
 	trx["confirm"] = true
+	trx["createdAt"] = time.Now().Format(time.RFC3339)
 	db.Store(db.TRANSACTIONS, trx)
 	return trx
 }
@@ -36,10 +52,8 @@ func updateNewTransactionOfAddress(network string, address string) []map[string]
 	newTrxList := []map[string]interface{}{}
 	i := 0
 	for _, transaction := range blockchair.GetAddressHistory(network, address) {
+		transaction["address"] = address
 		transaction["network"] = network
-		//
-		// Dev: only for simulate one new transaction
-		//
 		if config.Simulate_new_request {
 			if i == 0 {
 				transaction["block_id"] = -1
