@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var Envirnoment, WebhookAddress, TatumToken string
+var Envirnoment, WebhookAddress, TatumToken, LOG_FILE_PATH string
 var ConfirmCount int
 var Simulate_new_request bool
 
@@ -24,4 +24,5 @@ func init() {
 	TatumToken = os.Getenv("TATUM_API_TOKEN")
 	ConfirmCount, _ = strconv.Atoi(os.Getenv("CONFIRM_COUNT"))
 	Simulate_new_request = os.Getenv("SIMULATE_NEW_REQ") == "true"
+	LOG_FILE_PATH = "./logs/daily.log"
 }

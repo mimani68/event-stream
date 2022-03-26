@@ -2,6 +2,7 @@ package event_stream
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"zarinworld.ir/event/config"
@@ -74,4 +75,5 @@ func cleanSystem() {
 func stopAppliction(st chan string) {
 	st <- "DONE"
 	defer fmt.Printf("The application stoped at [%s]\n", time.Now().Format(time.RFC3339))
+	os.Exit(0)
 }
