@@ -2,13 +2,10 @@ package blockchair
 
 import (
 	"fmt"
-	"math"
 
-	"zarinworld.ir/event/config"
-	"zarinworld.ir/event/pkg/db"
+	"zarinworld.ir/event/pkg/blockchain_utils"
 	"zarinworld.ir/event/pkg/http_proxy"
 	"zarinworld.ir/event/pkg/log_handler"
-	"zarinworld.ir/event/pkg/utils"
 )
 
 func GetAddressHistory(network string, address string) []map[string]interface{} {
@@ -28,12 +25,6 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 		log_handler.LoggerF("%s", err.Error())
 		return []map[string]interface{}{}
 	}
-	currentBlock := 0
-	for _, blockPerNetwork := range db.GetAll(db.BLOCKNUMBER) {
-		if blockPerNetwork["id"] == network {
-			currentBlock = utils.ToInt(blockPerNetwork[network])
-		}
-	}
 
 	for _, trx := range trxList {
 		if trx["block_id"] == float64(-1) {
@@ -41,14 +32,7 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 			trx["confirmCount"] = 0
 		} else {
 			trx["confirm"] = true
-			if currentBlock > 0 {
-				switch network {
-				case config.ETHEREUM:
-					trx["confirmCount"] = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
-				case config.BITCOIN:
-					trx["confirmCount"] = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
-				}
-			}
+			trx["confirmCount"] = blockchain_utils.ConfirmNumber(network, trx["hash"].(string))
 		}
 	}
 	return trxList

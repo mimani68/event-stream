@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"zarinworld.ir/event/config"
+	"zarinworld.ir/event/pkg/blockchain_utils"
 	"zarinworld.ir/event/pkg/blockchair"
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/log_handler"
@@ -20,7 +21,7 @@ func getconfirmTransactions() []map[string]interface{} {
 func checkConfirmationOfSingleTransaction(network string, trxID string) map[string]interface{} {
 	log_handler.LoggerF("Update trx %s that hash confirm > 0 on %s network", trxID, network)
 	trx := tatum.GetTrxDetails(network, trxID)
-	currentBlock := getCurrentBlock(network)
+	// currentBlock := getCurrentBlock(network)
 	if trx["reciver"] != nil {
 		trx["address"] = trx["receiver"]
 	}
@@ -35,8 +36,10 @@ func checkConfirmationOfSingleTransaction(network string, trxID string) map[stri
 				}
 			}
 		}
+		trx["confirmCount"] = blockchain_utils.ConfirmNumber(network, trx["hash"].(string))
+	case config.ETHEREUM:
+		trx["confirmCount"] = blockchain_utils.ConfirmNumber(network, trx["transaction_hash"].(string))
 	}
-	trx["confirmCount"] = currentBlock - utils.ToInt(trx["blockNumber"])
 	trx["confirm"] = true
 	trx["createdAt"] = time.Now().Format(time.RFC3339)
 	db.Store(db.TRANSACTIONS, trx)
