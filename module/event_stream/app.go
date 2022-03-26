@@ -63,7 +63,7 @@ func EventHandlerModule(stateChannel chan string) {
 	cronProxy(CRON_EVERY_30_MINUTES, func() {
 		cleanSystem()
 	})
-	cronProxy(CRON_AT_4_OCLOCK, func() {
+	cronProxy(CRON_EVERY_6_HOURS, func() {
 		stopAppliction(stateChannel)
 	})
 }

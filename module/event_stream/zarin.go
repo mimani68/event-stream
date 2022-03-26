@@ -52,6 +52,7 @@ func updateNewTransactionOfAddress(network string, address string) []map[string]
 	newTrxList := []map[string]interface{}{}
 	i := 0
 	for _, transaction := range blockchair.GetAddressHistory(network, address) {
+		log_handler.LoggerF("[DEBUG][TRX] %s", fmt.Sprint(transaction))
 		transaction["address"] = address
 		transaction["network"] = network
 		if config.Simulate_new_request {
@@ -60,8 +61,9 @@ func updateNewTransactionOfAddress(network string, address string) []map[string]
 				i = 1000
 			}
 		}
-		if transaction["block_id"] == -1 {
+		if float64(transaction["block_id"].(float64)) == float64(-1) {
 			transaction["confirmCount"] = 0
+			log_handler.LoggerF("New trx of address %s%s%s / trxId %s in network %s%s%s Founded.", log_handler.ColorGreen, address, log_handler.ColorReset, utils.ToString(transaction["block_id"]), log_handler.ColorGreen, network, log_handler.ColorReset)
 			newTrxList = append(newTrxList, transaction)
 			db.Store(db.NEW_TRANSACTIONS, transaction)
 		} else {

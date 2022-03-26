@@ -2,6 +2,7 @@ package blockchair
 
 import (
 	"fmt"
+	"math"
 
 	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/db"
@@ -25,7 +26,6 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 	if err != nil {
 		log_handler.LoggerF("Problem occured on parsing %sBLOCKCHAIR%s on %s network", log_handler.ColorRed, log_handler.ColorReset, network)
 		log_handler.LoggerF("%s", err.Error())
-		log_handler.LoggerF("[DEBUG] %s", responseString)
 		return []map[string]interface{}{}
 	}
 	currentBlock := 0
@@ -36,12 +36,17 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 	}
 
 	for _, trx := range trxList {
-		trx["confirm"] = false
-		switch network {
-		case config.ETHEREUM:
-			trx["confirmCount"] = currentBlock - utils.ToInt(trx["block_id"])
-		case config.BITCOIN:
-			trx["confirmCount"] = currentBlock - utils.ToInt(trx["block_id"])
+		if trx["block_id"] == float64(-1) {
+			trx["confirm"] = false
+			trx["confirmCount"] = 0
+		} else {
+			trx["confirm"] = true
+			switch network {
+			case config.ETHEREUM:
+				trx["confirmCount"] = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
+			case config.BITCOIN:
+				trx["confirmCount"] = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
+			}
 		}
 	}
 	return trxList

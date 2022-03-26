@@ -50,6 +50,7 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	}
 	postBody, _ := json.Marshal(payload)
 	requestBody := bytes.NewBuffer(postBody)
+	log_handler.LoggerF("[DEBUG] webhook payload %s", utils.ToString(payload))
 	_, err := http.Post(config.WebhookAddress, "application/json", requestBody)
 	if err != nil {
 		log_handler.LoggerF("Error in sending webhook to %s%s%s", log_handler.ColorRed, config.WebhookAddress, log_handler.ColorReset)

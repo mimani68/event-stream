@@ -12,6 +12,7 @@ const (
 	CRON_EVERY_30_SECONDS = "*/30 * * * * *"
 	CRON_EVERY_30_MINUTES = "*/30 * * * *"
 	CRON_AT_4_OCLOCK      = "0 4 * * *"
+	CRON_EVERY_6_HOURS    = "0 6,12,18,23 * * *"
 )
 
 func cronProxy(cronTimeString string, cb func()) (bool, error) {
