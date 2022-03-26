@@ -15,7 +15,8 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 	url := fmt.Sprintf("https://api.blockchair.com/%s/dashboards/address/%s?transaction_details=true", network, address)
 	httpRequest := BlockchairHttpValidation{}
 	responseString, err := http_proxy.Get(url, nil)
-	if err != nil {
+	blockchairStatus, _ := httpRequest.blockchairOkResponse(responseString)
+	if err != nil || !blockchairStatus {
 		log_handler.LoggerF("%sBLOCKCHAIR%s didn't response on %s network", log_handler.ColorRed, log_handler.ColorReset, network)
 		log_handler.LoggerF("%s", err.Error())
 		return []map[string]interface{}{}

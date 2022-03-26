@@ -74,3 +74,22 @@ func (h *BlockchairHttpValidation) bitcoinResponseCleaner(value string, address 
 	}
 	return fmt.Sprintf("%s", cleanedText), nil
 }
+
+func (h *BlockchairHttpValidation) blockchairOkResponse(response string) (bool, error) {
+	a := blockchairDto{}
+	if err := json.Unmarshal([]byte(response), &a); err != nil {
+		log_handler.LoggerF(err.Error())
+		return false, err
+	}
+	if a.Context.Code != 200 {
+		return false, nil
+	} else {
+		return true, nil
+	}
+}
+
+type blockchairDto struct {
+	Context struct {
+		Code int `json:"code"`
+	} `json:"context"`
+}
