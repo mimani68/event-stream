@@ -63,7 +63,7 @@ func updateNewTransactionOfAddress(network string, address string) []map[string]
 		}
 		if float64(transaction["block_id"].(float64)) == float64(-1) {
 			transaction["confirmCount"] = 0
-			log_handler.LoggerF("New trx of address %s%s%s / trxId %s in network %s%s%s Founded.", log_handler.ColorGreen, address, log_handler.ColorReset, utils.ToString(transaction["block_id"]), log_handler.ColorGreen, network, log_handler.ColorReset)
+			log_handler.LoggerF("New trx of address %s%s%s / trxId %s in network %s%s%s Founded.", log_handler.ColorGreen, address, log_handler.ColorReset, utils.ToString(transaction["hash"]), log_handler.ColorGreen, network, log_handler.ColorReset)
 			newTrxList = append(newTrxList, transaction)
 			db.Store(db.NEW_TRANSACTIONS, transaction)
 		} else {
