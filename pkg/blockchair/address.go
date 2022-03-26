@@ -41,11 +41,13 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 			trx["confirmCount"] = 0
 		} else {
 			trx["confirm"] = true
-			switch network {
-			case config.ETHEREUM:
-				trx["confirmCount"] = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
-			case config.BITCOIN:
-				trx["confirmCount"] = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
+			if currentBlock > 0 {
+				switch network {
+				case config.ETHEREUM:
+					trx["confirmCount"] = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
+				case config.BITCOIN:
+					trx["confirmCount"] = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
+				}
 			}
 		}
 	}
