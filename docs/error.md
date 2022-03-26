@@ -1,0 +1,4 @@
+invalid character 'u' looking for beginning of value 
+Problem occured on parsing BLOCKCHAIR on bitcoin network 
+invalid character 'u' looking for beginning of value 
+[DEBUG] {"data":null,"context":{"code":402,"api_usage":{"requests_60s":31,"requests_60s_limit":30,"requests_60m":120,"requests_60m_limit":1800},"error":"You're sending too many requests. Please contact us at info@blockchair.com to increase the limit for you. \u0421urrent limits are 30 requests per minute and 1800 per hour.","market_price_usd":44464,"cache":{"live":true,"duration":60,"since":"2022-03-26 10:03:59","until":"2022-03-26 10:04:59","time":null},"api":{"version":"2.0.95-ie","last_major_update":"2021-07-19 00:00:00","next_major_update":null,"documentation":"https:\/\/blockchair.com\/api\/docs","notice":":)"},"servers":"API4","time":null,"render_time":0.0010161399841308594,"full_time":0.0010161399841308594,"request_cost":1}} 
