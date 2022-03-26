@@ -8,13 +8,16 @@ import (
 )
 
 func GetCurrentBlock(network string) int {
-	// curl --request GET \
-	//   --url https://api-eu1.tatum.io/v3/bitcoin/info \
-	//   --header 'x-api-key: REPLACE_KEY_VALUE'
+	if config.MOCK {
+		return mockCurrentBlock(network)
+	}
 	result := 0
 	url := ""
 	switch network {
 	case config.BITCOIN:
+		// curl --request GET \
+		//   --url https://api-eu1.tatum.io/v3/bitcoin/info \
+		//   --header "x-api-key: $API_TOKEN"
 		url = "https://api-eu1.tatum.io/v3/bitcoin/info"
 	case config.ETHEREUM:
 		url = "https://api-eu1.tatum.io/v3/ethereum/block/current"
@@ -31,6 +34,17 @@ func GetCurrentBlock(network string) int {
 		result = tv.bitcoinCurrentBlockResponseParser(responseString)
 	case config.ETHEREUM:
 		result = utils.ToInt(responseString)
+	}
+	return result
+}
+
+func mockCurrentBlock(network string) int {
+	result := 0
+	switch network {
+	case config.BITCOIN:
+		result = 729140
+	case config.ETHEREUM:
+		result = 14463422
 	}
 	return result
 }

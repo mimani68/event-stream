@@ -10,7 +10,7 @@ import (
 
 var Envirnoment, WebhookAddress, TatumToken, LOG_FILE_PATH string
 var ConfirmCount int
-var Simulate_new_request bool
+var Simulate_new_request, MOCK bool
 
 func init() {
 	err := godotenv.Load(".env")
@@ -25,4 +25,5 @@ func init() {
 	ConfirmCount, _ = strconv.Atoi(os.Getenv("CONFIRM_COUNT"))
 	Simulate_new_request = os.Getenv("SIMULATE_NEW_REQ") == "true"
 	LOG_FILE_PATH = "./logs/daily.log"
+	MOCK = os.Getenv("MOCK") == "true"
 }

@@ -3,12 +3,16 @@ package blockchair
 import (
 	"fmt"
 
+	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/blockchain_utils"
 	"zarinworld.ir/event/pkg/http_proxy"
 	"zarinworld.ir/event/pkg/log_handler"
 )
 
 func GetAddressHistory(network string, address string) []map[string]interface{} {
+	if config.MOCK {
+		return mockAddressHistory(network)
+	}
 	// https://api.blockchair.com/bitcoin/dashboards/address/bc1qcrudsryq8gcuspdz3ddvzytt8vch6l4ugfzp5y?transaction_details=true
 	url := fmt.Sprintf("https://api.blockchair.com/%s/dashboards/address/%s?transaction_details=true", network, address)
 	httpRequest := BlockchairHttpValidation{}
@@ -36,4 +40,39 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 		}
 	}
 	return trxList
+}
+
+func mockAddressHistory(network string) []map[string]interface{} {
+	result := []map[string]interface{}{}
+	switch network {
+	case config.BITCOIN:
+		result = []map[string]interface{}{
+			{
+				"balance_change": 521,
+				"block_id":       float64(729130),
+				"hash":           "e7e027e80d036b4faa2ec5a8e2d8ae584df9e3c566c407483add1edcdc06080f",
+				"time":           "2022-03-26 16:06:54",
+			},
+			{
+				"balance_change": -297,
+				"block_id":       float64(729126),
+				"hash":           "f606d8aaa00235cc8922227f4293cf80d0b93a3242f589b6d08e3965ad6fff96",
+				"time":           "2022-03-26 15:24:48",
+			},
+			{
+				"balance_change": 472,
+				"block_id":       float64(729126),
+				"hash":           "ebf2cc0448c9bf25593be90b43240289a035d1f299614b8cfae60cb8e4debe59",
+				"time":           "2022-03-26 15:24:48",
+			},
+		}
+		// go func
+		// result = append(result, map[string]interface{}{
+		// 	"balance_change": 100,
+		// 	"block_id":       float64(-1),
+		// 	"hash":           "xxx",
+		// 	"time":           "2022-03-26 15:24:48",
+		// })
+	}
+	return result
 }
