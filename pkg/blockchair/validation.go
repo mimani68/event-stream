@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/robertkrimen/otto"
+	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/log_handler"
 )
 
@@ -14,9 +15,9 @@ func (h *BlockchairHttpValidation) ParseBlockchairResult(value string, address s
 	response := map[string]interface{}{}
 
 	switch network {
-	case "bitcoin":
+	case config.BITCOIN:
 		value, _ = h.bitcoinResponseCleaner(value, address)
-	case "ethereum":
+	case config.ETHEREUM:
 		value, _ = h.ethereumResponseCleaner(value, address)
 	}
 
@@ -33,9 +34,9 @@ func (h *BlockchairHttpValidation) ParseBlockchairListResult(value string, addre
 	response := []map[string]interface{}{}
 
 	switch network {
-	case "bitcoin":
+	case config.BITCOIN:
 		value, _ = h.bitcoinResponseCleaner(value, address)
-	case "ethereum":
+	case config.ETHEREUM:
 		value, _ = h.ethereumResponseCleaner(value, address)
 	}
 
