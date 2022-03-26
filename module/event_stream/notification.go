@@ -13,6 +13,8 @@ import (
 )
 
 func sendPostWebhook(payload map[string]interface{}) (bool, error) {
+	preqeust, _ := json.Marshal(payload)
+	log_handler.LoggerF("[DEBUG][WEBHOOK] Sending post webhook request with payload %s", string(preqeust))
 	// Check confirm more than "config.Confirm_Count"
 	if !config.Simulate_new_request && utils.ToInt(payload["confirmCount"]) > config.ConfirmCount {
 		return false, nil
@@ -51,13 +53,13 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	postBody, _ := json.Marshal(payload)
 	requestBody := bytes.NewBuffer(postBody)
 	jsonPayload, _ := json.Marshal(payload)
-	log_handler.LoggerF("[DEBUG] webhook payload %s", string(jsonPayload))
 	_, err := http.Post(config.WebhookAddress, "application/json", requestBody)
 	if err != nil {
 		log_handler.LoggerF("Error in sending webhook to %s%s%s", log_handler.ColorRed, config.WebhookAddress, log_handler.ColorReset)
 		StoreEvent(payload, false, err)
 		return false, err
 	}
+	log_handler.LoggerF("[DEBUG][WEBHOOK] webhook sent by payload %s", string(jsonPayload))
 	log_handler.LoggerF("Message sent as \"%s%s%s\" status to \"%s\"", log_handler.ColorGreen, payload["type"].(string), log_handler.ColorReset, config.WebhookAddress)
 	StoreEvent(payload, true, nil)
 	return true, nil

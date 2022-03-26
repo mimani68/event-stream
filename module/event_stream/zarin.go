@@ -52,12 +52,11 @@ func updateNewTransactionOfAddress(network string, address string) []map[string]
 	newTrxList := []map[string]interface{}{}
 	i := 0
 	for _, transaction := range blockchair.GetAddressHistory(network, address) {
-		log_handler.LoggerF("[DEBUG][TRX] %s", fmt.Sprint(transaction))
 		transaction["address"] = address
 		transaction["network"] = network
 		if config.Simulate_new_request {
 			if i == 0 {
-				transaction["block_id"] = -1
+				transaction["block_id"] = float64(-1)
 				i = 1000
 			}
 		}
