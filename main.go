@@ -16,7 +16,7 @@ func main() {
 		event_stream.SetNewAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
 	}
 	stateOfApplication := make(chan string)
-	event_stream.EventHandlerModuleDev(stateOfApplication)
-	// event_stream.EventHandlerModule(stateOfApplication)
+	// event_stream.EventHandlerModuleDev(stateOfApplication)
+	event_stream.EventHandlerModule(stateOfApplication)
 	<-stateOfApplication
 }

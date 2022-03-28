@@ -21,7 +21,13 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	} else if payload["trxHash"] != nil {
 		payload["trxId"] = utils.ToString(payload["trxHash"])
 	} else if payload["transaction"] != nil {
-		payload["trxId"] = utils.ToString(payload["trxHash"])
+		payload["trxId"] = utils.ToString(payload["transaction"])
+	}
+
+	if payload["type"] == nil {
+		log_handler.LoggerF("Value of payload['type'] is empty.")
+		// return false, errors.New("Value of payload['type'] is empty.")
+		payload["type"] = "UNKNOWN"
 	}
 
 	preqeust, _ := json.Marshal(payload)
@@ -41,7 +47,8 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 			utils.ToString(payload["address"]) == utils.ToString(eventPayload["address"]) &&
 			utils.ToString(payload["network"]) == utils.ToString(eventPayload["network"]) &&
 			utils.ToString(payload["value"]) == utils.ToString(eventPayload["value"]) &&
-			utils.ToString(payload["confirmCount"]) == utils.ToString(eventPayload["confirmCount"])
+			utils.ToString(payload["confirmCount"]) == utils.ToString(eventPayload["confirmCount"]) &&
+			utils.ToString(payload["confirm"]) == utils.ToString(eventPayload["confirm"])
 		// Check "confirmCount" less than config.Confirm_Count
 		inConfirmRange := utils.ToInt(eventPayload["confirmCount"]) < config.ConfirmCount
 		// Check for old events

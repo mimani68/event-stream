@@ -9,4 +9,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.0
 )
 
-require gopkg.in/sourcemap.v1 v1.0.5 // indirect
+require (
+	github.com/bxcodec/faker/v3 v3.8.0 // indirect
+	gopkg.in/sourcemap.v1 v1.0.5 // indirect
+)

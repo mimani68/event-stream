@@ -1,11 +1,8 @@
 package event_stream
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
-
-	"zarinworld.ir/event/pkg/db"
 )
 
 func EventHandlerModuleDev(stateChannel chan string) {
@@ -81,9 +78,30 @@ func EventHandlerModuleDev(stateChannel chan string) {
 	sendPostWebhook(map[string]interface{}{
 		"balance_change": rand.Intn(3),
 		"block_id":       rand.Float64(),
-		"hash":           "xc",
+		"hash":           "aloo",
+		"confirm":        false,
+		"confirmCount":   0,
+		"type":           "OK",
 		"time":           time.Now().Format(time.RFC3339),
 	})
-	a := db.GetAll(db.EVENTS)
-	fmt.Println(a)
+	time.Sleep(5 * time.Second)
+	sendPostWebhook(map[string]interface{}{
+		"balance_change": rand.Intn(3),
+		"block_id":       rand.Float64(),
+		"hash":           "aloo",
+		"confirm":        true,
+		"confirmCount":   1,
+		"type":           "OK",
+		"time":           time.Now().Format(time.RFC3339),
+	})
+	time.Sleep(5 * time.Second)
+	sendPostWebhook(map[string]interface{}{
+		"balance_change": rand.Intn(3),
+		"block_id":       rand.Float64(),
+		"hash":           "aloo",
+		"confirm":        true,
+		"confirmCount":   2,
+		"type":           "OK",
+		"time":           time.Now().Format(time.RFC3339),
+	})
 }
