@@ -11,6 +11,7 @@ func GetCurrentBlock(network string) int {
 	if config.MOCK {
 		return mockCurrentBlock(network)
 	}
+	// time.Sleep(2 * time.Second)
 	result := 0
 	url := ""
 	switch network {
@@ -24,6 +25,10 @@ func GetCurrentBlock(network string) int {
 	}
 	header := map[string]string{"x-api-key": config.TatumToken}
 	responseString, err := http_proxy.Get(url, header)
+	if reachRateLimitOfTatum(responseString) {
+		log_handler.LoggerF("%sTATUM%s rate limit", log_handler.ColorRed, log_handler.ColorReset)
+		return 0
+	}
 	if err != nil {
 		log_handler.LoggerF("%sTATUM%s didn't response on %s network", log_handler.ColorRed, log_handler.ColorReset, network)
 		return 0

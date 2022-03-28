@@ -23,9 +23,14 @@ func GetTrxDetails(network string, trxID string) map[string]interface{} {
 	var err error
 	if !config.MOCK {
 		responseString, err = http_proxy.Get(url, header)
+		if reachRateLimitOfTatum(responseString) {
+			log_handler.LoggerF("%sTATUM%s rate limit", log_handler.ColorRed, log_handler.ColorReset)
+			return map[string]interface{}{}
+		}
 	} else {
 		responseString = mockStringTrxDetails(network)
 	}
+
 	if err != nil {
 		log_handler.LoggerF("%sTATUM%s didn't response on %s network", log_handler.ColorRed, log_handler.ColorReset, network)
 	}
