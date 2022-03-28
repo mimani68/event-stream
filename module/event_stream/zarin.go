@@ -14,17 +14,9 @@ import (
 	"zarinworld.ir/event/pkg/utils"
 )
 
-func getconfirmTransactions() []map[string]interface{} {
-	return db.GetAll(db.TRANSACTIONS)
-}
-
 func checkConfirmationOfSingleTransaction(network string, trxID string) map[string]interface{} {
 	log_handler.LoggerF("Update trx %s that hash confirm > 0 on %s network", trxID, network)
 	trx := tatum.GetTrxDetails(network, trxID)
-	// currentBlock := getCurrentBlock(network)
-	if trx["reciver"] != nil {
-		trx["address"] = trx["receiver"]
-	}
 	switch network {
 	case config.BITCOIN:
 		for _, addressObject := range config.AddressList {
@@ -38,6 +30,7 @@ func checkConfirmationOfSingleTransaction(network string, trxID string) map[stri
 		}
 		trx["confirmCount"] = blockchain_utils.ConfirmNumber(network, trx["hash"].(string))
 	case config.ETHEREUM:
+		trx["address"] = trx["to"]
 		trx["confirmCount"] = blockchain_utils.ConfirmNumber(network, trx["transaction_hash"].(string))
 	}
 	trx["confirm"] = true
@@ -81,15 +74,6 @@ func updateCurrentBlock(network string) {
 	msg := fmt.Sprintf("Current block number of %s%s%s is %s%d%s and db update", log_handler.ColorGreen, network, log_handler.ColorReset, log_handler.ColorGreen, number, log_handler.ColorReset)
 	log_handler.LoggerF(msg)
 	db.Store(db.BLOCKNUMBER, blockNumberObject)
-}
-
-func getCurrentBlock(network string) int {
-	number := 0
-	networkList := db.GetAll(db.BLOCKNUMBER)
-	for _, net := range networkList {
-		number = utils.ToInt(net[network])
-	}
-	return number
 }
 
 func SetNewNetwork(network string) {
