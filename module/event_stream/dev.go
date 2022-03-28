@@ -1,20 +1,23 @@
 package event_stream
 
 import (
-	"zarinworld.ir/event/pkg/delay"
-	"zarinworld.ir/event/pkg/utils"
+	"fmt"
+	"math/rand"
+	"time"
+
+	"zarinworld.ir/event/pkg/db"
 )
 
 func EventHandlerModuleDev(stateChannel chan string) {
 
-	for _, address := range GetAddressList() {
-		newTransactionsList := updateNewTransactionOfAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
-		for _, updatedTrx := range newTransactionsList {
-			updatedTrx["type"] = "New transaction detected"
-			go sendPostWebhook(updatedTrx)
-			delay.SetSyncDelay(2)
-		}
-	}
+	// for _, address := range GetAddressList() {
+	// 	newTransactionsList := updateNewTransactionOfAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
+	// 	for _, updatedTrx := range newTransactionsList {
+	// 		updatedTrx["type"] = "New transaction detected"
+	// 		go sendPostWebhook(updatedTrx)
+	// 		delay.SetSyncDelay(2)
+	// 	}
+	// }
 
 	// for _, network := range GetNetworkList() {
 	// 	// Get latest block number
@@ -49,36 +52,38 @@ func EventHandlerModuleDev(stateChannel chan string) {
 	// updatedTrx := checkConfirmationOfSingleTransaction(config.ETHEREUM, "0x13c28d5e3a0b7a21a4b516e7d1b4f9b22f6cadeeecc93bb5b490cd99ce6f3f2b")
 	// fmt.Println(updatedTrx)
 
-	// StoreEvent(map[string]interface{}{
-	// 	"type":         "sample",
-	// 	"confirmCount": 2,
-	// 	"time":         time.Now().Format(time.RFC3339),
-	// }, true, nil)
-	// StoreEvent(map[string]interface{}{
-	// 	"type":         "sample",
-	// 	"confirmCount": 3,
-	// 	"time":         time.Now().Format(time.RFC3339),
-	// }, true, nil)
-	// sendPostWebhook(map[string]interface{}{
-	// 	"type":         "sample",
-	// 	"confirmCount": 4,
-	// 	"time":         time.Now().Format(time.RFC3339),
-	// })
-	// sendPostWebhook(map[string]interface{}{
-	// 	"type":         "sample",
-	// 	"confirmCount": 4,
-	// 	"time":         time.Now().Format(time.RFC3339),
-	// })
-	// sendPostWebhook(map[string]interface{}{
-	// 	"type":         "sample",
-	// 	"confirmCount": 4,
-	// 	"time":         time.Now().Format(time.RFC3339),
-	// })
-	// sendPostWebhook(map[string]interface{}{
-	// 	"type":         "sample",
-	// 	"confirmCount": 4,
-	// 	"time":         time.Now().Format(time.RFC3339),
-	// })
-	// a := db.GetAll(db.EVENTS)
-	// fmt.Println(a)
+	eventList := []map[string]interface{}{
+		{
+			"balance_change": rand.Intn(3),
+			"block_id":       rand.Float64(),
+			"trxId":          "e7e027e80d036b4faa2ec5a8e2d8ae584df9e3c566c407483add1edcdc06080f",
+			"time":           time.Now().Format(time.RFC3339),
+		},
+		{
+			"balance_change": rand.Intn(3),
+			"block_id":       rand.Float64(),
+			"transaction":    "e7e027e80d036b4faa2ec5a8e2d8ae584df9e3c566c407483add1edcdc06080f",
+			"time":           time.Now().Format(time.RFC3339),
+		},
+		{
+			"balance_change": rand.Intn(3),
+			"block_id":       rand.Float64(),
+			"hash":           "e7e027e80d036b4faa2ec5a8e2d8ae584df9e3c566c407483add1edcdc06080f",
+			"time":           time.Now().Format(time.RFC3339),
+		},
+	}
+	for _, v := range eventList {
+		StoreEvent(v, true, nil)
+	}
+	p := eventList[0]
+	p["type"] = "DONE"
+	sendPostWebhook(p)
+	sendPostWebhook(map[string]interface{}{
+		"balance_change": rand.Intn(3),
+		"block_id":       rand.Float64(),
+		"hash":           "xc",
+		"time":           time.Now().Format(time.RFC3339),
+	})
+	a := db.GetAll(db.EVENTS)
+	fmt.Println(a)
 }

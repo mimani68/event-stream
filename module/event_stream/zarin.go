@@ -53,16 +53,9 @@ func getNewTransactions() []map[string]interface{} {
 func updateNewTransactionOfAddress(network string, address string) []map[string]interface{} {
 	log_handler.LoggerF("Checking new trx of address %s%s%s in network %s%s%s", log_handler.ColorGreen, address, log_handler.ColorReset, log_handler.ColorGreen, network, log_handler.ColorReset)
 	newTrxList := []map[string]interface{}{}
-	i := 0
 	for _, transaction := range blockchair.GetAddressHistory(network, address) {
 		transaction["address"] = address
 		transaction["network"] = network
-		if config.Simulate_new_request {
-			if i == 0 {
-				transaction["block_id"] = float64(-1)
-				i = 1000
-			}
-		}
 		if float64(transaction["block_id"].(float64)) == float64(-1) {
 			transaction["confirmCount"] = 0
 			log_handler.LoggerF("New trx of address %s%s%s / trxId %s in network %s%s%s Founded.", log_handler.ColorGreen, address, log_handler.ColorReset, utils.ToString(transaction["hash"]), log_handler.ColorGreen, network, log_handler.ColorReset)

@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
 
 var Envirnoment, WebhookAddress, TatumToken, LOG_FILE_PATH string
 var ConfirmCount int
-var Simulate_new_request, MOCK bool
+var AgeOfOldMessage time.Duration
+var MOCK bool
 
 func init() {
 	err := godotenv.Load(".env")
@@ -23,7 +25,7 @@ func init() {
 	WebhookAddress = os.Getenv("CLIENT_END_POINT")
 	TatumToken = os.Getenv("TATUM_API_TOKEN")
 	ConfirmCount, _ = strconv.Atoi(os.Getenv("CONFIRM_COUNT"))
-	Simulate_new_request = os.Getenv("SIMULATE_NEW_REQ") == "true"
 	LOG_FILE_PATH = "./logs/daily.log"
 	MOCK = os.Getenv("MOCK") == "true"
+	AgeOfOldMessage = 3 * time.Hour
 }

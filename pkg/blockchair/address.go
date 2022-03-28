@@ -2,6 +2,7 @@ package blockchair
 
 import (
 	"fmt"
+	"time"
 
 	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/blockchain_utils"
@@ -42,6 +43,8 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 	return trxList
 }
 
+var mockStart = time.Now()
+
 func mockAddressHistory(network string) []map[string]interface{} {
 	result := []map[string]interface{}{}
 	switch network {
@@ -53,26 +56,37 @@ func mockAddressHistory(network string) []map[string]interface{} {
 				"hash":           "e7e027e80d036b4faa2ec5a8e2d8ae584df9e3c566c407483add1edcdc06080f",
 				"time":           "2022-03-26 16:06:54",
 			},
-			{
-				"balance_change": -297,
-				"block_id":       float64(729126),
-				"hash":           "f606d8aaa00235cc8922227f4293cf80d0b93a3242f589b6d08e3965ad6fff96",
-				"time":           "2022-03-26 15:24:48",
-			},
-			{
-				"balance_change": 472,
-				"block_id":       float64(729126),
-				"hash":           "ebf2cc0448c9bf25593be90b43240289a035d1f299614b8cfae60cb8e4debe59",
-				"time":           "2022-03-26 15:24:48",
-			},
+			// {
+			// 	"balance_change": -297,
+			// 	"block_id":       float64(729126),
+			// 	"hash":           "f606d8aaa00235cc8922227f4293cf80d0b93a3242f589b6d08e3965ad6fff96",
+			// 	"time":           "2022-03-26 15:24:48",
+			// },
+			// {
+			// 	"balance_change": 472,
+			// 	"block_id":       float64(729126),
+			// 	"hash":           "ebf2cc0448c9bf25593be90b43240289a035d1f299614b8cfae60cb8e4debe59",
+			// 	"time":           "2022-03-26 15:24:48",
+			// },
 		}
-		// go func
-		// result = append(result, map[string]interface{}{
-		// 	"balance_change": 100,
-		// 	"block_id":       float64(-1),
-		// 	"hash":           "xxx",
-		// 	"time":           "2022-03-26 15:24:48",
-		// })
+		if time.Now().After(mockStart.Add(10 * time.Second)) {
+			mockStart = time.Now()
+			result = append(result, map[string]interface{}{
+				"balance_change": 98,
+				"block_id":       float64(-1),
+				"hash":           "xxx",
+				"time":           time.Now().Format(time.RFC3339),
+			})
+		}
+		if time.Now().After(mockStart.Add(20 * time.Second)) {
+			mockStart = time.Now()
+			result = append(result, map[string]interface{}{
+				"balance_change": 100,
+				"block_id":       float64(-1),
+				"hash":           "xxxz",
+				"time":           time.Now().Format(time.RFC3339),
+			})
+		}
 	}
 	return result
 }

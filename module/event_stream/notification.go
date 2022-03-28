@@ -13,45 +13,56 @@ import (
 )
 
 func sendPostWebhook(payload map[string]interface{}) (bool, error) {
-	preqeust, _ := json.Marshal(payload)
-	log_handler.LoggerF("[DEBUG][WEBHOOK] Sending post webhook request with payload %s", string(preqeust))
-	// Check confirm more than "config.Confirm_Count"
-	if !config.Simulate_new_request && utils.ToInt(payload["confirmCount"]) > config.ConfirmCount {
-		return false, nil
-	}
-	for _, event := range db.GetAll(db.EVENTS) {
-		eventPayload := event["payload"].(map[string]interface{})
-		timeString, _ := time.Parse(time.RFC3339, event["time"].(string))
-		isDuplicatedRequest := utils.ToString(payload["id"]) == utils.ToString(eventPayload["id"]) &&
-			utils.ToString(payload["type"]) == utils.ToString(eventPayload["type"]) &&
-			utils.ToString(payload["hash"]) == utils.ToString(eventPayload["hash"]) &&
-			utils.ToString(payload["trxHash"]) == utils.ToString(eventPayload["trxHash"]) &&
-			utils.ToString(payload["transaction_hash"]) == utils.ToString(eventPayload["transaction_hash"]) &&
-			utils.ToString(payload["trxId"]) == utils.ToString(eventPayload["trxId"]) &&
-			utils.ToString(payload["address"]) == utils.ToString(eventPayload["address"]) &&
-			utils.ToString(payload["network"]) == utils.ToString(eventPayload["network"]) &&
-			utils.ToString(payload["value"]) == utils.ToString(eventPayload["value"]) &&
-			utils.ToString(payload["confirmCount"]) == utils.ToString(eventPayload["confirmCount"])
-		// Check duplicated request
-		if !config.Simulate_new_request && isDuplicatedRequest {
-			a, _ := json.Marshal(payload)
-			log_handler.LoggerF("[DEBUG][WEBHOOK] Duplicated event %s", string(a))
-			return false, nil
-		}
-		// Check for old events
-		if !config.Simulate_new_request && utils.ToInt(timeString.Add(24*time.Hour).Unix()) < int(time.Now().Unix()) {
-			return false, nil
-		}
-		// Check "confirmCount" less than config.Confirm_Count
-		if !config.Simulate_new_request && utils.ToInt(eventPayload["confirmCount"]) > config.ConfirmCount {
-			return false, nil
-		}
-	}
+	existInSendedList := false
 	if payload["transaction_hash"] != nil {
 		payload["trxId"] = utils.ToString(payload["transaction_hash"])
 	} else if payload["hash"] != nil {
 		payload["trxId"] = utils.ToString(payload["hash"])
+	} else if payload["trxHash"] != nil {
+		payload["trxId"] = utils.ToString(payload["trxHash"])
+	} else if payload["transaction"] != nil {
+		payload["trxId"] = utils.ToString(payload["trxHash"])
 	}
+
+	preqeust, _ := json.Marshal(payload)
+	log_handler.LoggerF("[DEBUG][WEBHOOK] payload %s", string(preqeust))
+
+	if len(db.GetAll(db.EVENTS)) == 0 {
+		existInSendedList = false
+	}
+
+	// Check event list
+	for _, event := range db.GetAll(db.EVENTS) {
+		// Check duplicated request
+		eventPayload := event["payload"].(map[string]interface{})
+		isDuplicatedRequest := utils.ToString(payload["type"]) == utils.ToString(eventPayload["type"]) &&
+			utils.ToString(payload["trxId"]) == utils.ToString(eventPayload["trxId"]) &&
+			utils.ToString(payload["sendingStatus"]) == utils.ToString(eventPayload["sendingStatus"]) &&
+			utils.ToString(payload["address"]) == utils.ToString(eventPayload["address"]) &&
+			utils.ToString(payload["network"]) == utils.ToString(eventPayload["network"]) &&
+			utils.ToString(payload["value"]) == utils.ToString(eventPayload["value"]) &&
+			utils.ToString(payload["confirmCount"]) == utils.ToString(eventPayload["confirmCount"])
+		// Check "confirmCount" less than config.Confirm_Count
+		inConfirmRange := utils.ToInt(eventPayload["confirmCount"]) < config.ConfirmCount
+		// Check for old events
+		timeString, _ := time.Parse(time.RFC3339, event["time"].(string))
+		notOldMessage := timeString.Add(config.AgeOfOldMessage).Unix() > time.Now().Unix()
+		// sendedBefore := event["sendingStatus"].(bool) || payload["sendingStatus"] != nil || payload["status"] != nil
+		if isDuplicatedRequest && notOldMessage && inConfirmRange {
+			existInSendedList = true
+		}
+	}
+
+	// Check confirm more than "config.Confirm_Count"
+	if utils.ToInt(payload["confirmCount"]) > config.ConfirmCount {
+		return false, nil
+	}
+
+	if existInSendedList {
+		log_handler.LoggerF("Sending message is unable because criteria limit")
+		return false, nil
+	}
+
 	postBody, _ := json.Marshal(payload)
 	requestBody := bytes.NewBuffer(postBody)
 	jsonPayload, _ := json.Marshal(payload)

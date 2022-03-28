@@ -9,7 +9,6 @@ import (
 
 func main() {
 	log_handler.LoggerF("Envirnoment: %s%s%s", log_handler.ColorYellow, utils.ToString(config.Envirnoment), log_handler.ColorReset)
-	log_handler.LoggerF("Simulation mode: %s%s%s", log_handler.ColorYellow, utils.ToString(config.Simulate_new_request), log_handler.ColorReset)
 	log_handler.LoggerF("MOCK: %s%s%s", log_handler.ColorYellow, utils.ToString(config.MOCK), log_handler.ColorReset)
 	event_stream.SetNewNetwork(config.ETHEREUM)
 	event_stream.SetNewNetwork(config.BITCOIN)
@@ -17,7 +16,7 @@ func main() {
 		event_stream.SetNewAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
 	}
 	stateOfApplication := make(chan string)
-	// event_stream.EventHandlerModuleDev(stateOfApplication)
-	event_stream.EventHandlerModule(stateOfApplication)
+	event_stream.EventHandlerModuleDev(stateOfApplication)
+	// event_stream.EventHandlerModule(stateOfApplication)
 	<-stateOfApplication
 }

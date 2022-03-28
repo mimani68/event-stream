@@ -12,14 +12,14 @@ import (
 )
 
 func EventHandlerModule(stateChannel chan string) {
-	cronProxy(CRON_EVERY_15_SECONDS, func() {
+	cronProxy(CRON_EVERY_5_SECONDS, func() {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
 			updateCurrentBlock(utils.ToString(network["network"]))
 			delay.SetSyncDelay(5)
 		}
 	})
-	cronProxy(CRON_EVERY_30_SECONDS, func() {
+	cronProxy(CRON_EVERY_10_SECONDS, func() {
 		// Check new transactions
 		for _, address := range GetAddressList() {
 			newTransactionsList := updateNewTransactionOfAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
