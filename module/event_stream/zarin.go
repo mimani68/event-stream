@@ -19,15 +19,19 @@ func checkConfirmationOfSingleTransaction(network string, trxID string) map[stri
 	trx := tatum.GetTrxDetails(network, trxID)
 	switch network {
 	case config.BITCOIN:
-		for _, addressObject := range config.AddressList {
-			if trx["outputs"] != nil {
-				for _, bitcoinOutputList := range trx["outputs"].([]interface{}) {
-					if addressObject["address"] == bitcoinOutputList.(map[string]interface{})["address"] {
-						trx["address"] = addressObject["address"]
-					}
-				}
-			}
-		}
+		//
+		// FIXME: read "addres" from "vout > [] > script > address" path
+		//
+		// for _, addressObject := range config.AddressList {
+		// 	if trx["outputs"] != nil {
+		// 		for _, bitcoinOutputList := range trx["outputs"].([]interface{}) {
+		// 			if addressObject["address"] == bitcoinOutputList.(map[string]interface{})["address"] {
+		// 				trx["address"] = addressObject["address"]
+		// 			}
+		// 		}
+		// 	}
+		// }
+		trx["address"] = "UNKNOWN"
 		trx["confirmCount"] = blockchain_utils.ConfirmNumber(network, trx["hash"].(string))
 	case config.ETHEREUM:
 		trx["address"] = trx["to"]
