@@ -32,7 +32,7 @@ func checkConfirmationOfSingleTransaction(network string, trxID string) map[stri
 		// 	}
 		// }
 		trx["address"] = "UNKNOWN"
-		trx["confirmCount"] = blockchain_utils.ConfirmNumber(network, trx["hash"].(string))
+		trx["confirmCount"] = blockchain_utils.ConfirmNumber(network, trxID)
 	case config.ETHEREUM:
 		trx["address"] = trx["to"]
 		trx["confirmCount"] = blockchain_utils.ConfirmNumber(network, trx["transaction_hash"].(string))

@@ -32,5 +32,5 @@ func init() {
 	LOG_FILE_PATH = "./logs/daily.log"
 	OFFLINE = os.Getenv("MOCK") == "true"
 	AgeOfOldMessage = 3 * time.Hour
-	FAKE_FIRST_TRX_NEW = false
+	FAKE_FIRST_TRX_NEW = os.Getenv("FAKE_FIRST_TRX_NEW") == "true"
 }
