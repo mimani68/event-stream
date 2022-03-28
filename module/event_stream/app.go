@@ -12,21 +12,21 @@ import (
 )
 
 func EventHandlerModule(stateChannel chan string) {
-	cronProxy(CRON_EVERY_5_SECONDS, func() {
+	cronProxy(CRON_EVERY_20_SECONDS, func() {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
 			updateCurrentBlock(utils.ToString(network["network"]))
 			delay.SetSyncDelay(5)
 		}
 	})
-	cronProxy(CRON_EVERY_10_SECONDS, func() {
+	cronProxy(CRON_EVERY_ONE_MINUTE, func() {
 		// Check new transactions
 		for _, address := range GetAddressList() {
 			newTransactionsList := updateNewTransactionOfAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
 			for _, updatedTrx := range newTransactionsList {
 				updatedTrx["type"] = "new transaction detected"
 				go sendPostWebhook(updatedTrx)
-				delay.SetSyncDelay(2)
+				delay.SetSyncDelay(5)
 			}
 		}
 		// Check status of new transactions and update them
@@ -42,7 +42,7 @@ func EventHandlerModule(stateChannel chan string) {
 				updatedTrx["type"] = "confirm transactions"
 				go sendPostWebhook(updatedTrx)
 				// FIXME: remove from NEW_TRANSACTIONS
-				delay.SetSyncDelay(2)
+				delay.SetSyncDelay(7)
 			}
 		}
 		// Dobule check status of confirm transactions for confirmCount> 1

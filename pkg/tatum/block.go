@@ -8,7 +8,7 @@ import (
 )
 
 func GetCurrentBlock(network string) int {
-	if config.MOCK {
+	if config.OFFLINE {
 		return mockCurrentBlock(network)
 	}
 	// time.Sleep(2 * time.Second)

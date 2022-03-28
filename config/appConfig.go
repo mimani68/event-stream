@@ -12,7 +12,8 @@ import (
 var Envirnoment, WebhookAddress, TatumToken, LOG_FILE_PATH string
 var ConfirmCount int
 var AgeOfOldMessage time.Duration
-var MOCK bool
+var FAKE_FIRST_TRX_NEW, OFFLINE bool
+var confErr error
 
 func init() {
 	err := godotenv.Load(".env")
@@ -24,8 +25,12 @@ func init() {
 	Envirnoment = os.Getenv("ENV")
 	WebhookAddress = os.Getenv("CLIENT_END_POINT")
 	TatumToken = os.Getenv("TATUM_API_TOKEN")
-	ConfirmCount, _ = strconv.Atoi(os.Getenv("CONFIRM_COUNT"))
+	ConfirmCount, confErr = strconv.Atoi(os.Getenv("CONFIRM_COUNT"))
+	if confErr != nil {
+		ConfirmCount = 5
+	}
 	LOG_FILE_PATH = "./logs/daily.log"
-	MOCK = os.Getenv("MOCK") == "true"
+	OFFLINE = os.Getenv("MOCK") == "true"
 	AgeOfOldMessage = 3 * time.Hour
+	FAKE_FIRST_TRX_NEW = false
 }

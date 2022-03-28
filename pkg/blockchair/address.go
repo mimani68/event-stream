@@ -18,9 +18,9 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 	httpRequest := BlockchairHttpValidation{}
 	var responseString string
 	var err error
-	if !config.MOCK {
+	if !config.OFFLINE {
 		responseString, err = http_proxy.Get(url, nil)
-	} else if config.MOCK {
+	} else if config.OFFLINE {
 		responseString = mockAddressHistory(network, address)
 	}
 	blockchairStatus, _ := httpRequest.blockchairOkResponse(responseString)
@@ -35,8 +35,14 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 		log_handler.LoggerF("%s", err.Error())
 		return []map[string]interface{}{}
 	}
-
+	dev := true
 	for _, trx := range trxList {
+		if config.FAKE_FIRST_TRX_NEW {
+			if dev {
+				dev = false
+				trx["block_id"] = float64(-1)
+			}
+		}
 		if trx["block_id"] == float64(-1) {
 			trx["confirm"] = false
 			trx["confirmCount"] = 0
