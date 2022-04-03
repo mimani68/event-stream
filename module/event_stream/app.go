@@ -16,7 +16,7 @@ func EventHandlerModule(stateChannel chan string) {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
 			UpdateCurrentBlock(utils.ToString(network["network"]))
-			delay.SetSyncDelay(5)
+			delay.SetSyncDelay(2)
 		}
 	})
 	cronProxy(CRON_EVERY_30_SECONDS, func() {
@@ -26,7 +26,7 @@ func EventHandlerModule(stateChannel chan string) {
 			for _, updatedTrx := range newTransactionsList {
 				updatedTrx["type"] = "new transaction detected"
 				go sendPostWebhook(updatedTrx)
-				delay.SetSyncDelay(5)
+				delay.SetSyncDelay(2)
 			}
 		}
 		// Check status of new transactions and update them
@@ -43,7 +43,7 @@ func EventHandlerModule(stateChannel chan string) {
 				updatedTrx["type"] = "confirm transactions"
 				go sendPostWebhook(updatedTrx)
 				// FIXME: remove from NEW_TRANSACTIONS
-				delay.SetSyncDelay(7)
+				delay.SetSyncDelay(5)
 			}
 		}
 		// Dobule check status of confirm transactions for confirmCount> 1
