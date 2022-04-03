@@ -14,7 +14,7 @@ import (
 	"zarinworld.ir/event/pkg/utils"
 )
 
-func checkConfirmationOfSingleTransaction(network string, trxID string) map[string]interface{} {
+func CheckConfirmationOfSingleTransaction(network string, trxID string) map[string]interface{} {
 	log_handler.LoggerF("Update trx %s that hash confirm > 0 on %s network", trxID, network)
 	trx := tatum.GetTrxDetails(network, trxID)
 	switch network {
@@ -43,11 +43,11 @@ func checkConfirmationOfSingleTransaction(network string, trxID string) map[stri
 	return trx
 }
 
-func getNewTransactions() []map[string]interface{} {
+func GetNewTransactions() []map[string]interface{} {
 	return db.GetAll(db.NEW_TRANSACTIONS)
 }
 
-func updateNewTransactionOfAddress(network string, address string) []map[string]interface{} {
+func UpdateNewTransactionOfAddress(network string, address string) []map[string]interface{} {
 	log_handler.LoggerF("Checking new trx of address %s%s%s in network %s%s%s", log_handler.ColorGreen, address, log_handler.ColorReset, log_handler.ColorGreen, network, log_handler.ColorReset)
 	newTrxList := []map[string]interface{}{}
 	for _, transaction := range blockchair.GetAddressHistory(network, address) {
@@ -65,11 +65,11 @@ func updateNewTransactionOfAddress(network string, address string) []map[string]
 	return newTrxList
 }
 
-func GetUndeterminedAuthorities() []map[string]interface{} {
-	return db.GetAll(db.AUTHORITIES)
+func GetConfirmTransactions() []map[string]interface{} {
+	return db.GetAll(db.TRANSACTIONS)
 }
 
-func updateCurrentBlock(network string) {
+func UpdateCurrentBlock(network string) {
 	number := tatum.GetCurrentBlock(network)
 	blockNumberObject := map[string]interface{}{
 		"id":    network,

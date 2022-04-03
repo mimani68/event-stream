@@ -15,14 +15,14 @@ func EventHandlerModule(stateChannel chan string) {
 	cronProxy(CRON_EVERY_10_SECONDS, func() {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
-			updateCurrentBlock(utils.ToString(network["network"]))
+			UpdateCurrentBlock(utils.ToString(network["network"]))
 			delay.SetSyncDelay(5)
 		}
 	})
 	cronProxy(CRON_EVERY_30_SECONDS, func() {
 		// Check new transactions
 		for _, address := range GetAddressList() {
-			newTransactionsList := updateNewTransactionOfAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
+			newTransactionsList := UpdateNewTransactionOfAddress(utils.ToString(address["network"]), utils.ToString(address["address"]))
 			for _, updatedTrx := range newTransactionsList {
 				updatedTrx["type"] = "new transaction detected"
 				go sendPostWebhook(updatedTrx)
@@ -30,13 +30,13 @@ func EventHandlerModule(stateChannel chan string) {
 			}
 		}
 		// Check status of new transactions and update them
-		for _, newItem := range getNewTransactions() {
+		for _, newItem := range GetNewTransactions() {
 			updatedTrx := map[string]interface{}{}
 			switch newItem["network"] {
 			case config.BITCOIN:
-				updatedTrx = checkConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["hash"]))
+				updatedTrx = CheckConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["hash"]))
 			case config.ETHEREUM:
-				updatedTrx = checkConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["transaction_hash"]))
+				updatedTrx = CheckConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["transaction_hash"]))
 			}
 			if updatedTrx != nil {
 				updatedTrx["address"] = newItem["address"]
@@ -47,19 +47,19 @@ func EventHandlerModule(stateChannel chan string) {
 			}
 		}
 		// Dobule check status of confirm transactions for confirmCount> 1
-		// for _, newItem := range getconfirmTransactions() {
-		// 	updatedTrx := map[string]interface{}{}
-		// 	switch newItem["network"] {
-		// 	case config.BITCOIN:
-		// 		updatedTrx = checkConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["hash"]))
-		// 	case config.ETHEREUM:
-		// 		updatedTrx = checkConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["transaction_hash"]))
-		// 	}
-		// 	// FIXME: updatedTrx["confirmCount"] > 5 ==> remove from TRANSACTIONS
-		// 	updatedTrx["type"] = "confirm transactions"
-		// 	go sendPostWebhook(updatedTrx)
-		// 	delay.SetSyncDelay(10)
-		// }
+		for _, newItem := range GetConfirmTransactions() {
+			updatedTrx := map[string]interface{}{}
+			switch newItem["network"] {
+			case config.BITCOIN:
+				updatedTrx = CheckConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["hash"]))
+			case config.ETHEREUM:
+				updatedTrx = CheckConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["transaction_hash"]))
+			}
+			// FIXME: updatedTrx["confirmCount"] > 5 ==> remove from TRANSACTIONS
+			updatedTrx["type"] = "confirm transactions"
+			go sendPostWebhook(updatedTrx)
+			delay.SetSyncDelay(10)
+		}
 	})
 	cronProxy(CRON_EVERY_30_MINUTES, func() {
 		cleanSystem()
