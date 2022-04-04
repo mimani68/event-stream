@@ -9,7 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var Envirnoment, WebhookAddress, TatumToken, LOG_FILE_PATH string
+var Envirnoment, WebhookAddress, TatumToken, LOG_FILE_PATH, Log_level string
 var ConfirmCount int
 var AgeOfOldMessage time.Duration
 var FAKE_FIRST_TRX_NEW, OFFLINE bool
@@ -24,6 +24,10 @@ func init() {
 
 	Envirnoment = os.Getenv("ENV")
 	WebhookAddress = os.Getenv("CLIENT_END_POINT")
+	Log_level = os.Getenv("LOG_LEVEL")
+	if Log_level == "" {
+		Log_level = "error" /* "info", "debug" */
+	}
 	TatumToken = os.Getenv("TATUM_API_TOKEN")
 	if TatumToken == "" {
 		fmt.Println("TATUM api token dose not exists")

@@ -31,7 +31,9 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	}
 
 	preqeust, _ := json.Marshal(payload)
-	log_handler.LoggerF("[DEBUG][WEBHOOK] trxId=%s type=%s", payload["trxId"].(string), payload["type"].(string))
+	if payload["trxId"] != nil && payload["type"] != nil {
+		log_handler.LoggerF("[DEBUG][WEBHOOK] trxId=%s type=%s", payload["trxId"].(string), payload["type"].(string))
+	}
 	log_handler.LoggerF("[DEBUG][WEBHOOK] payload %s", string(preqeust))
 
 	if len(db.GetAll(db.EVENTS)) == 0 {

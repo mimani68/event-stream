@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -23,6 +24,11 @@ const (
 )
 
 func LoggerF(template string, params ...string) {
+	isDebug, _ := regexp.MatchString(`(?i)DEBUG`, template)
+	if isDebug && config.Log_level != "debug" {
+		return
+	}
+
 	switch len(params) {
 	case 1:
 		template = fmt.Sprintf(template, params[0])
@@ -40,8 +46,6 @@ func LoggerF(template string, params ...string) {
 		template = fmt.Sprintf(template, params[0], params[1], params[2], params[3], params[4], params[5], params[6])
 	case 8:
 		template = fmt.Sprintf(template, params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7])
-	default:
-		template = template
 	}
 	fmt.Printf("%s[%s]%s %s \n", ColorBlue, time.Now().Format(time.RFC3339), ColorReset, template)
 	storeFile(config.LOG_FILE_PATH, template)
