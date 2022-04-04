@@ -74,7 +74,12 @@ func cleanSystem() {
 }
 
 func stopAppliction(st chan string) {
-	fmt.Printf("The application stoped at [%s]\n", time.Now().Format(time.RFC3339))
+	fmt.Println("")
+	fmt.Println("")
+	log_handler.LoggerF("The Application are going to stop, now is [%s]\n", time.Now().Format(time.RFC3339))
+	log_handler.LoggerF("BYE")
+	fmt.Println("")
+	fmt.Println("")
 	st <- "DONE"
 	defer os.Exit(0)
 }
