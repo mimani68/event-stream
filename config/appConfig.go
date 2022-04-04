@@ -25,6 +25,10 @@ func init() {
 	Envirnoment = os.Getenv("ENV")
 	WebhookAddress = os.Getenv("CLIENT_END_POINT")
 	TatumToken = os.Getenv("TATUM_API_TOKEN")
+	if TatumToken == "" {
+		fmt.Println("TATUM api token dose not exists")
+		os.Exit(1)
+	}
 	ConfirmCount, confErr = strconv.Atoi(os.Getenv("CONFIRM_COUNT"))
 	if confErr != nil {
 		ConfirmCount = 5

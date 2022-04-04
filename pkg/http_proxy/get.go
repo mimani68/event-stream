@@ -15,8 +15,8 @@ func Get(url string, header map[string]string) (string, error) {
 		log_handler.LoggerF("Send \"GET\" request to %s is unable", url)
 		return "", err
 	}
-	if header["x-api-token"] != "" {
-		req.Header.Add("x-api-token", utils.ToString(header["x-api-token"]))
+	if header["x-api-key"] != "" {
+		req.Header.Add("x-api-key", utils.ToString(header["x-api-key"]))
 	}
 	response, err := client.Do(req)
 	// responseByte, err := http.Get(url)
