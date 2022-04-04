@@ -56,6 +56,7 @@ func EventHandlerModule(stateChannel chan string) {
 				updatedTrx = CheckConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["transaction_hash"]))
 			}
 			// FIXME: updatedTrx["confirmCount"] > 5 ==> remove from TRANSACTIONS
+			updatedTrx["address"] = newItem["address"]
 			updatedTrx["type"] = "confirm transactions"
 			go sendPostWebhook(updatedTrx)
 			delay.SetSyncDelay(5)

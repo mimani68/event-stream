@@ -33,5 +33,5 @@ func ConfirmNumber(network string, trxId string) int {
 	if result == 0 {
 		result = 1
 	}
-	return int(result)
+	return int(result) + 1
 }

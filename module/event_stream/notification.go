@@ -30,6 +30,10 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 		payload["type"] = "UNKNOWN"
 	}
 
+	if payload["address"] == nil || payload["address"] == "" || payload["address"] == "UNKNOWN" {
+		log_handler.LoggerF("The message with empty \"payload[address]\" will not send.")
+	}
+
 	preqeust, _ := json.Marshal(payload)
 	if payload["trxId"] != nil && payload["type"] != nil {
 		log_handler.LoggerF("[DEBUG][WEBHOOK] trxId=%s type=%s", payload["trxId"].(string), payload["type"].(string))
