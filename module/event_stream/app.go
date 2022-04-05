@@ -40,7 +40,7 @@ func EventHandlerModule(stateChannel chan string) {
 			}
 			if updatedTrx != nil {
 				updatedTrx["address"] = newItem["address"]
-				updatedTrx["type"] = "confirm transactions"
+				updatedTrx["type"] = "confirm_transaction"
 				go sendPostWebhook(updatedTrx)
 				// FIXME: remove from NEW_TRANSACTIONS
 				delay.SetSyncDelay(3)
@@ -57,7 +57,7 @@ func EventHandlerModule(stateChannel chan string) {
 			}
 			// FIXME: updatedTrx["confirmCount"] > 5 ==> remove from TRANSACTIONS
 			updatedTrx["address"] = newItem["address"]
-			updatedTrx["type"] = "confirm transactions"
+			updatedTrx["type"] = "confirm_transaction"
 			go sendPostWebhook(updatedTrx)
 			delay.SetSyncDelay(5)
 		}
