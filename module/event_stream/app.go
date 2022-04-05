@@ -12,6 +12,7 @@ import (
 )
 
 func EventHandlerModule(stateChannel chan string) {
+	go cleanSystem()
 	cronProxy(CRON_EVERY_5_SECONDS, func() {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
@@ -66,6 +67,12 @@ func EventHandlerModule(stateChannel chan string) {
 
 func cleanSystem() {
 	log_handler.LoggerF("Cleaning start")
+	err := os.Remove(config.LogFilePath)
+	if err != nil {
+		log_handler.LoggerF("Unable to remove log file " + config.LogFilePath)
+		log_handler.LoggerF(err.Error())
+	}
+	log_handler.LoggerF("Cleaning finished")
 }
 
 func stopAppliction(st chan string) {

@@ -21,7 +21,7 @@ func GetTrxDetails(network string, trxID string) map[string]interface{} {
 	header := map[string]string{"x-api-key": config.TatumToken}
 	var responseString string
 	var err error
-	if !config.OFFLINE {
+	if !config.Offline {
 		responseString, err = http_proxy.Get(url, header)
 		if reachRateLimitOfTatum(responseString) {
 			log_handler.LoggerF("%sTATUM%s rate limit", log_handler.ColorRed, log_handler.ColorReset)

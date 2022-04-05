@@ -48,7 +48,7 @@ func LoggerF(template string, params ...string) {
 		template = fmt.Sprintf(template, params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7])
 	}
 	fmt.Printf("%s[%s]%s %s \n", ColorBlue, time.Now().Format(time.RFC3339), ColorReset, template)
-	storeFile(config.LOG_FILE_PATH, template)
+	storeFile(config.LogFilePath, template)
 }
 
 var Marshal = func(v interface{}) (string, error) {

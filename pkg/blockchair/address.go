@@ -18,9 +18,9 @@ func GetAddressHistory(network string, address string) []map[string]interface{} 
 	httpRequest := BlockchairHttpValidation{}
 	var responseString string
 	var err error
-	if !config.OFFLINE {
+	if !config.Offline {
 		responseString, err = http_proxy.Get(url, nil)
-	} else if config.OFFLINE {
+	} else if config.Offline {
 		responseString = mockAddressHistory(network, address)
 	}
 	blockchairStatus, _ := httpRequest.blockchairOkResponse(responseString)

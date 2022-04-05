@@ -9,10 +9,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var Envirnoment, WebhookAddress, TatumToken, LOG_FILE_PATH, Log_level string
+var Envirnoment, WebhookAddress, TatumToken, LogFilePath, Log_level string
 var ConfirmCount int
 var AgeOfOldMessage time.Duration
-var FAKE_FIRST_TRX_NEW, OFFLINE bool
+var FAKE_FIRST_TRX_NEW, Offline bool
 var confErr error
 
 func init() {
@@ -37,8 +37,8 @@ func init() {
 	if confErr != nil {
 		ConfirmCount = 5
 	}
-	LOG_FILE_PATH = "./logs/daily.log"
-	OFFLINE = os.Getenv("MOCK") == "true"
+	LogFilePath = "./logs/daily.log"
+	Offline = os.Getenv("MOCK") == "true"
 	AgeOfOldMessage = 3 * time.Hour
 	FAKE_FIRST_TRX_NEW = os.Getenv("FAKE_FIRST_TRX_NEW") == "true"
 }
