@@ -12,7 +12,6 @@ import (
 )
 
 func EventHandlerModule(stateChannel chan string) {
-	go cleanSystem()
 	cronProxy(CRON_EVERY_5_SECONDS, func() {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
