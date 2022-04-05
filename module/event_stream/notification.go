@@ -104,7 +104,7 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 		return false, err
 	}
 	log_handler.LoggerF("[DEBUG][WEBHOOK] webhook sent by payload %s", string(jsonPayload))
-	log_handler.LoggerF(`Confirmation message sent => network: "%s", address: "%s", trxId: "%s", status: "%s", webhookUrl: "%s"`, utils.ToString(payload["network"]), utils.ToString(payload["address"]), utils.ToString(payload["trxId"]), utils.ToString(payload["type"]), config.WebhookAddress)
+	log_handler.LoggerF(`Confirmation message sent => network: "%s" / address: "%s" / trxId: "%s" / status: "%s" / webhookUrl: "%s"`, utils.ToString(payload["network"]), utils.ToString(payload["address"]), utils.ToString(payload["trxId"]), utils.ToString(payload["type"]), config.WebhookAddress)
 	StoreEvent(payload, true, nil)
 	return true, nil
 }

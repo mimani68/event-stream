@@ -29,8 +29,8 @@ func EventHandlerModule(stateChannel chan string) {
 				delay.SetSyncDelay(3)
 			}
 		}
-		// Check status of new transactions and update them
-		for _, newItem := range GetNewTransactions() {
+
+		dn := func(newItem map[string]interface{}) {
 			updatedTrx := map[string]interface{}{}
 			switch newItem["network"] {
 			case config.BITCOIN:
@@ -43,23 +43,17 @@ func EventHandlerModule(stateChannel chan string) {
 				updatedTrx["type"] = "confirm_transaction"
 				go sendPostWebhook(updatedTrx)
 				// FIXME: remove from NEW_TRANSACTIONS
-				delay.SetSyncDelay(3)
+				delay.SetSyncDelay(1)
 			}
 		}
+
 		// Dobule check status of confirm transactions for confirmCount> 1
 		for _, newItem := range GetConfirmTransactions() {
-			updatedTrx := map[string]interface{}{}
-			switch newItem["network"] {
-			case config.BITCOIN:
-				updatedTrx = CheckConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["hash"]))
-			case config.ETHEREUM:
-				updatedTrx = CheckConfirmationOfSingleTransaction(utils.ToString(newItem["network"]), utils.ToString(newItem["transaction_hash"]))
-			}
-			// FIXME: updatedTrx["confirmCount"] > 5 ==> remove from TRANSACTIONS
-			updatedTrx["address"] = newItem["address"]
-			updatedTrx["type"] = "confirm_transaction"
-			go sendPostWebhook(updatedTrx)
-			delay.SetSyncDelay(5)
+			dn(newItem)
+		}
+		// Check status of new transactions and update them
+		for _, newItem := range GetNewTransactions() {
+			dn(newItem)
 		}
 	})
 	cronProxy(CRON_EVERY_30_MINUTES, func() {
