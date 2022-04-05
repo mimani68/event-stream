@@ -1,8 +1,6 @@
 package blockchain_utils
 
 import (
-	"math"
-
 	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/db"
 	"zarinworld.ir/event/pkg/tatum"
@@ -15,7 +13,8 @@ func ConfirmNumber(network string, trxId string) int {
 	if trx == nil {
 		return 0
 	}
-	result := float64(0)
+	result := 0
+	// result := float64(0)
 	for _, blockPerNetwork := range db.GetAll(db.BLOCKNUMBER) {
 		if blockPerNetwork["id"] == network {
 			currentBlock = utils.ToInt(blockPerNetwork[network])
@@ -26,12 +25,14 @@ func ConfirmNumber(network string, trxId string) int {
 	// }
 	switch network {
 	case config.ETHEREUM:
-		result = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
+		// result = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
+		result = currentBlock - utils.ToInt(trx["block_id"])
 	case config.BITCOIN:
-		result = math.Abs(float64(currentBlock-utils.ToInt(trx["blockNumber"]))) + 1
+		// result = math.Abs(float64(currentBlock-utils.ToInt(trx["blockNumber"]))) + 1
+		result = int(trx["blockNumber"].(float64))
 	}
 	if result == 0 {
 		result = 1
 	}
-	return int(result)
+	return result
 }
