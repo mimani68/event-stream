@@ -26,7 +26,7 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	}
 
 	if payload["address"] == nil || payload["address"] == "" || payload["address"] == "UNKNOWN" {
-		log_handler.LoggerF("[ERROR] The message which its \"payload[address]\" is empty, will not send.")
+		// log_handler.LoggerF("[ERROR] The message which its \"payload[address]\" is empty, will not send.")
 		return false, errors.New("empty Address")
 	}
 

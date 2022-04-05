@@ -28,8 +28,7 @@ func ConfirmNumber(network string, trxId string) int {
 		// result = math.Abs(float64(currentBlock - utils.ToInt(trx["block_id"])))
 		result = currentBlock - utils.ToInt(trx["block_id"])
 	case config.BITCOIN:
-		// result = math.Abs(float64(currentBlock-utils.ToInt(trx["blockNumber"]))) + 1
-		result = int(trx["blockNumber"].(float64))
+		result = (currentBlock - utils.ToInt(trx["blockNumber"])) + 1
 	}
 	if result == 0 {
 		result = 1
