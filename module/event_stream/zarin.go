@@ -15,7 +15,6 @@ import (
 )
 
 func CheckConfirmationOfSingleTransaction(network string, trxID string) map[string]interface{} {
-	log_handler.LoggerF("Update trx %s that hash confirm > 0 on %s network", trxID, network)
 	trx := tatum.GetTrxDetails(network, trxID)
 	switch network {
 	case config.BITCOIN:
@@ -39,6 +38,7 @@ func CheckConfirmationOfSingleTransaction(network string, trxID string) map[stri
 	}
 	trx["confirm"] = true
 	trx["createdAt"] = time.Now().Format(time.RFC3339)
+	// log_handler.LoggerF("Update trx %s that hash confirm less than 1 on %s network", trxID, network)
 	db.Store(db.TRANSACTIONS, trx)
 	return trx
 }
@@ -48,14 +48,14 @@ func GetNewTransactions() []map[string]interface{} {
 }
 
 func UpdateNewTransactionOfAddress(network string, address string) []map[string]interface{} {
-	log_handler.LoggerF("Checking new trx of address %s%s%s in network %s%s%s", log_handler.ColorGreen, address, log_handler.ColorReset, log_handler.ColorGreen, network, log_handler.ColorReset)
+	// log_handler.LoggerF("Checking new trx of address %s%s%s in network %s%s%s", log_handler.ColorGreen, address, log_handler.ColorReset, log_handler.ColorGreen, network, log_handler.ColorReset)
 	newTrxList := []map[string]interface{}{}
 	for _, transaction := range blockchair.GetAddressHistory(network, address) {
 		transaction["address"] = address
 		transaction["network"] = network
 		if float64(transaction["block_id"].(float64)) == float64(-1) {
 			transaction["confirmCount"] = 0
-			log_handler.LoggerF("New trx of address %s%s%s / trxId %s in network %s%s%s Founded.", log_handler.ColorGreen, address, log_handler.ColorReset, utils.ToString(transaction["hash"]), log_handler.ColorGreen, network, log_handler.ColorReset)
+			log_handler.LoggerF(`New trx => network: %s%s%s / address: "%s" / trxId "%s" has been founded.`, log_handler.ColorGreen, network, log_handler.ColorReset, address, utils.ToString(transaction["hash"]))
 			newTrxList = append(newTrxList, transaction)
 			db.Store(db.NEW_TRANSACTIONS, transaction)
 		} else {
@@ -75,7 +75,7 @@ func UpdateCurrentBlock(network string) {
 		"id":    network,
 		network: number,
 	}
-	msg := fmt.Sprintf("Current block number of %s%s%s is %s%d%s and db update", log_handler.ColorGreen, network, log_handler.ColorReset, log_handler.ColorGreen, number, log_handler.ColorReset)
+	msg := fmt.Sprintf("[DEBUG] Current block number of %s%s%s is %s%d%s and db update", log_handler.ColorGreen, network, log_handler.ColorReset, log_handler.ColorGreen, number, log_handler.ColorReset)
 	log_handler.LoggerF(msg)
 	db.Store(db.BLOCKNUMBER, blockNumberObject)
 }

@@ -3,6 +3,7 @@ package event_stream
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -24,14 +25,29 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 		payload["trxId"] = utils.ToString(payload["transaction"])
 	}
 
-	if payload["type"] == nil {
-		log_handler.LoggerF("Value of payload['type'] is empty.")
-		// return false, errors.New("Value of payload['type'] is empty.")
-		payload["type"] = "UNKNOWN"
+	if payload["address"] == nil || payload["address"] == "" || payload["address"] == "UNKNOWN" {
+		log_handler.LoggerF("The message which its \"payload[address]\" is empty, will not send.")
+		return false, errors.New("empty Address")
 	}
 
-	if payload["address"] == nil || payload["address"] == "" || payload["address"] == "UNKNOWN" {
-		log_handler.LoggerF("The message with empty \"payload[address]\" will not send.")
+	if payload["trxId"] == nil || payload["trxId"] == "" || payload["trxId"] == "UNKNOWN" {
+		log_handler.LoggerF("The message which its \"payload[trxId]\" is empty, will not send.")
+		return false, errors.New("empty trxId")
+	}
+
+	if payload["confirmCount"] == nil || payload["confirmCount"] == "" || payload["confirmCount"] == "UNKNOWN" {
+		log_handler.LoggerF("The message which its \"payload[confirmCount]\" is empty, will not send.")
+		return false, errors.New("empty confirmCount")
+	}
+
+	if payload["confirm"] == nil || payload["confirm"] == "" || payload["confirm"] == "UNKNOWN" {
+		log_handler.LoggerF("The message which its \"payload[confirm]\" is empty, will not send.")
+		return false, errors.New("empty confirm")
+	}
+
+	if payload["type"] == nil || payload["type"] == "" {
+		log_handler.LoggerF("The message which its \"payload[type]\" is empty, will not send.")
+		return false, errors.New("empty type")
 	}
 
 	preqeust, _ := json.Marshal(payload)
@@ -64,6 +80,7 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 		// sendedBefore := event["sendingStatus"].(bool) || payload["sendingStatus"] != nil || payload["status"] != nil
 		if isDuplicatedRequest && notOldMessage && inConfirmRange {
 			existInSendedList = true
+			break
 		}
 	}
 
@@ -73,7 +90,7 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	}
 
 	if existInSendedList {
-		log_handler.LoggerF("Sending message is unable because criteria limit")
+		log_handler.LoggerF("[DEBUG] Sending message address: %s and trxId: %s is unable because duplicated", payload["address"].(string), payload["trxId"].(string))
 		return false, nil
 	}
 
