@@ -26,27 +26,27 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	}
 
 	if payload["address"] == nil || payload["address"] == "" || payload["address"] == "UNKNOWN" {
-		log_handler.LoggerF("The message which its \"payload[address]\" is empty, will not send.")
+		log_handler.LoggerF("[ERROR] The message which its \"payload[address]\" is empty, will not send.")
 		return false, errors.New("empty Address")
 	}
 
 	if payload["trxId"] == nil || payload["trxId"] == "" || payload["trxId"] == "UNKNOWN" {
-		log_handler.LoggerF("The message which its \"payload[trxId]\" is empty, will not send.")
+		log_handler.LoggerF("[ERROR] The message which its \"payload[trxId]\" is empty, will not send.")
 		return false, errors.New("empty trxId")
 	}
 
 	if payload["confirmCount"] == nil || payload["confirmCount"] == "" || payload["confirmCount"] == "UNKNOWN" {
-		log_handler.LoggerF("The message which its \"payload[confirmCount]\" is empty, will not send.")
+		log_handler.LoggerF("[ERROR] The message which its \"payload[confirmCount]\" is empty, will not send.")
 		return false, errors.New("empty confirmCount")
 	}
 
 	if payload["confirm"] == nil || payload["confirm"] == "" || payload["confirm"] == "UNKNOWN" {
-		log_handler.LoggerF("The message which its \"payload[confirm]\" is empty, will not send.")
+		log_handler.LoggerF("[ERROR] The message which its \"payload[confirm]\" is empty, will not send.")
 		return false, errors.New("empty confirm")
 	}
 
 	if payload["type"] == nil || payload["type"] == "" {
-		log_handler.LoggerF("The message which its \"payload[type]\" is empty, will not send.")
+		log_handler.LoggerF("[ERROR] The message which its \"payload[type]\" is empty, will not send.")
 		return false, errors.New("empty type")
 	}
 
@@ -99,7 +99,7 @@ func sendPostWebhook(payload map[string]interface{}) (bool, error) {
 	jsonPayload, _ := json.Marshal(payload)
 	_, err := http.Post(config.WebhookAddress, "application/json", requestBody)
 	if err != nil {
-		log_handler.LoggerF("Error in sending webhook to %s%s%s", log_handler.ColorRed, config.WebhookAddress, log_handler.ColorReset)
+		log_handler.LoggerF("[ERROR] Error in sending webhook to %s%s%s", log_handler.ColorRed, config.WebhookAddress, log_handler.ColorReset)
 		StoreEvent(payload, false, err)
 		return false, err
 	}
