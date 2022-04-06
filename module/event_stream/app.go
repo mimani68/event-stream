@@ -43,7 +43,7 @@ func EventHandlerModule(stateChannel chan string) {
 				updatedTrx["type"] = "confirm_transaction"
 				go sendPostWebhook(updatedTrx)
 				// FIXME: remove from NEW_TRANSACTIONS
-				delay.SetSyncDelay(1)
+				delay.SetSyncDelay(2)
 			}
 		}
 

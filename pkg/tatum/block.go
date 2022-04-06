@@ -3,6 +3,7 @@ package tatum
 import (
 	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/http_proxy"
+	"zarinworld.ir/event/pkg/in_memory_db"
 	"zarinworld.ir/event/pkg/log_handler"
 	"zarinworld.ir/event/pkg/utils"
 )
@@ -24,7 +25,19 @@ func GetCurrentBlock(network string) int {
 		url = "https://api-eu1.tatum.io/v3/ethereum/block/current"
 	}
 	header := map[string]string{"x-api-key": config.TatumToken}
-	responseString, err := http_proxy.Get(url, header)
+	// responseString, err := http_proxy.Get(url, header)
+
+	var responseString string
+	var err error
+	key := in_memory_db.KeyGenerator("tatum", "network", network)
+	responseString, err = in_memory_db.Get(key)
+	if err != nil {
+		responseString, err = http_proxy.Get(url, header)
+	} else {
+		log_handler.LoggerF("[DEBUG][CACHE] network %s info", network)
+	}
+	in_memory_db.Set(key, responseString)
+
 	if reachRateLimitOfTatum(responseString) {
 		log_handler.LoggerF("%sTATUM%s rate limit", log_handler.ColorRed, log_handler.ColorReset)
 		return 0
