@@ -12,13 +12,17 @@ import (
 )
 
 func EventHandlerModule(stateChannel chan string) {
-	cronProxy(CRON_EVERY_5_SECONDS, func() {
+	cronProxy(CRON_EVERY_10_SECONDS, func() {
 		// Get latest block number
 		for _, network := range GetNetworkList() {
 			UpdateCurrentBlock(utils.ToString(network["network"]))
-			delay.SetSyncDelay(1)
+			delay.SetSyncDelay(5)
 		}
 	})
+
+	// ensuring all network data loaded
+	delay.SetSyncDelay(30)
+
 	cronProxy(CRON_EVERY_15_SECONDS, func() {
 		// Check new transactions
 		for _, address := range GetAddressList() {
@@ -29,6 +33,12 @@ func EventHandlerModule(stateChannel chan string) {
 				delay.SetSyncDelay(3)
 			}
 		}
+	})
+
+	// Ensuring all new TRX downloaded
+	delay.SetSyncDelay(10)
+
+	cronProxy(CRON_EVERY_30_SECONDS, func() {
 
 		dn := func(newItem map[string]interface{}) {
 			updatedTrx := map[string]interface{}{}
@@ -50,15 +60,20 @@ func EventHandlerModule(stateChannel chan string) {
 		// Dobule check status of confirm transactions for confirmCount> 1
 		for _, newItem := range GetConfirmTransactions() {
 			dn(newItem)
+			delay.SetSyncDelay(15)
 		}
+
 		// Check status of new transactions and update them
 		for _, newItem := range GetNewTransactions() {
 			dn(newItem)
+			delay.SetSyncDelay(10)
 		}
 	})
+
 	cronProxy(CRON_EVERY_30_MINUTES, func() {
 		cleanSystem()
 	})
+
 	cronProxy(CRON_EVERY_6_HOURS, func() {
 		stopAppliction(stateChannel)
 	})

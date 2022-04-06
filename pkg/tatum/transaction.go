@@ -28,9 +28,9 @@ func GetTrxDetails(network string, trxID string) map[string]interface{} {
 		if err != nil {
 			responseString, err = http_proxy.Get(url, header)
 			in_memory_db.Set(key, responseString, 3600*3)
-			log_handler.LoggerF("[DEBUG][LIVE] network %s info", network)
+			log_handler.LoggerF("[DEBUG][LIVE] transaction => network:%s trxId:%s", network, trxID)
 		} else {
-			log_handler.LoggerF("[DEBUG][CACHE] transaction details %s info", network)
+			log_handler.LoggerF("[DEBUG][CACHE] transaction => network:%s trxId:%s", network, trxID)
 		}
 		if reachRateLimitOfTatum(responseString) {
 			log_handler.LoggerF("%sTATUM%s rate limit", log_handler.ColorRed, log_handler.ColorReset)
