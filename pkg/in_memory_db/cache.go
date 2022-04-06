@@ -11,18 +11,21 @@ import (
 var db []DatabaseDocument
 
 type DatabaseDocument struct {
-	Id    string `json:"id,omitempty"`
-	Key   string `json:"key"`
-	Value string `json:"value"`
-	Time  string `json:"time"`
+	Id        string `json:"id,omitempty"`
+	Key       string `json:"key"`
+	Value     string `json:"value"`
+	CreatedAt string `json:"createdAt"`
+	ExpireAt  string `json:"expireAt"`
 }
 
-func Set(key string, object interface{}) (success bool, err error) {
+func Set(key string, object interface{}, expirAfterSecond int) (success bool, err error) {
 	a := DatabaseDocument{}
 	a.Id = uuid.New().String()
 	a.Key = key
 	a.Value = object.(string)
-	a.Time = time.Now().Format(time.RFC3339)
+	a.CreatedAt = time.Now().Format(time.RFC3339)
+	t := time.Duration(expirAfterSecond * int(time.Second))
+	a.ExpireAt = time.Now().Add(t).Format(time.RFC3339)
 	db = append(db, a)
 	return true, nil
 }
@@ -30,7 +33,9 @@ func Set(key string, object interface{}) (success bool, err error) {
 func Get(key string) (data string, err error) {
 	err = errors.New("key " + key + " was not exists.")
 	for _, record := range db {
-		if record.Key == key {
+		stillValidRecord := record.ExpireAt > time.Now().Format(time.RFC3339)
+		sameKey := record.Key == key
+		if sameKey && stillValidRecord {
 			data = record.Value
 			err = nil
 		}

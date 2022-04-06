@@ -26,7 +26,7 @@ func init() {
 	WebhookAddress = os.Getenv("CLIENT_END_POINT")
 	Log_level = os.Getenv("LOG_LEVEL")
 	if Log_level == "" {
-		Log_level = "error" /* "info", "debug" */
+		Log_level = "ERROR" /* "INFO", "DEBUG" */
 	}
 	TatumToken = os.Getenv("TATUM_API_TOKEN")
 	if TatumToken == "" {

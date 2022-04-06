@@ -25,18 +25,17 @@ func GetCurrentBlock(network string) int {
 		url = "https://api-eu1.tatum.io/v3/ethereum/block/current"
 	}
 	header := map[string]string{"x-api-key": config.TatumToken}
-	// responseString, err := http_proxy.Get(url, header)
-
 	var responseString string
 	var err error
 	key := in_memory_db.KeyGenerator("tatum", "network", network)
 	responseString, err = in_memory_db.Get(key)
 	if err != nil {
 		responseString, err = http_proxy.Get(url, header)
+		in_memory_db.Set(key, responseString, 60)
+		log_handler.LoggerF("[DEBUG][LIVE] network %s info", network)
 	} else {
 		log_handler.LoggerF("[DEBUG][CACHE] network %s info", network)
 	}
-	in_memory_db.Set(key, responseString)
 
 	if reachRateLimitOfTatum(responseString) {
 		log_handler.LoggerF("%sTATUM%s rate limit", log_handler.ColorRed, log_handler.ColorReset)
