@@ -25,7 +25,7 @@ const (
 
 func LoggerF(template string, params ...string) {
 	isDebug, _ := regexp.MatchString(`(?i)DEBUG`, template)
-	if isDebug && config.Log_level != "debug" {
+	if isDebug && config.Log_level != "DEBUG" {
 		return
 	}
 

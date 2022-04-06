@@ -3,6 +3,7 @@ package tatum
 import (
 	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/pkg/http_proxy"
+	"zarinworld.ir/event/pkg/in_memory_db"
 	"zarinworld.ir/event/pkg/log_handler"
 	"zarinworld.ir/event/pkg/utils"
 )
@@ -22,7 +23,15 @@ func GetTrxDetails(network string, trxID string) map[string]interface{} {
 	var responseString string
 	var err error
 	if !config.Offline {
-		responseString, err = http_proxy.Get(url, header)
+		key := in_memory_db.KeyGenerator("tatum", "trx", trxID)
+		responseString, err = in_memory_db.Get(key)
+		if err != nil {
+			responseString, err = http_proxy.Get(url, header)
+			in_memory_db.Set(key, responseString, 3600*3)
+			log_handler.LoggerF("[DEBUG][LIVE] transaction => network:%s trxId:%s", network, trxID)
+		} else {
+			log_handler.LoggerF("[DEBUG][CACHE] transaction => network:%s trxId:%s", network, trxID)
+		}
 		if reachRateLimitOfTatum(responseString) {
 			log_handler.LoggerF("%sTATUM%s rate limit", log_handler.ColorRed, log_handler.ColorReset)
 			return map[string]interface{}{}
