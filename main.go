@@ -5,14 +5,12 @@ import (
 
 	"zarinworld.ir/event/config"
 	"zarinworld.ir/event/module/event_stream"
-	"zarinworld.ir/event/pkg/git_version"
 	"zarinworld.ir/event/pkg/log_handler"
 	"zarinworld.ir/event/pkg/utils"
 )
 
 func main() {
 	log_handler.LoggerF("%s%s%s", log_handler.ColorBlue, "=====================", log_handler.ColorReset)
-	log_handler.LoggerF("Version: %s%s%s", log_handler.ColorYellow, git_version.ShowLatestVersion(), log_handler.ColorReset)
 	log_handler.LoggerF("Envirnoment: %s%s%s", log_handler.ColorYellow, utils.ToString(config.Envirnoment), log_handler.ColorReset)
 	log_handler.LoggerF("Mock: %s%s%s", log_handler.ColorYellow, utils.ToString(config.Offline), log_handler.ColorReset)
 	log_handler.LoggerF("Log: %s%s%s", log_handler.ColorYellow, strings.ToLower(config.Log_level), log_handler.ColorReset)
